@@ -88,6 +88,15 @@ import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import android.Manifest
+import android.app.Activity
+import android.os.Looper
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.core.net.toUri
 import androidx.core.util.Consumer
 import androidx.core.view.WindowCompat
@@ -208,9 +217,13 @@ import com.zionhuang.innertube.YouTube
 import com.zionhuang.innertube.models.SongItem
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
 import java.net.URLDecoder
 import javax.inject.Inject
@@ -278,12 +291,23 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition",
         "StateFlowValueCalledInComposition"
     )
-    @OptIn(ExperimentalMaterial3Api::class)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        val libDerpMgr = newSingleThreadContext("libDerpMgr") // interaction perf handler
+        val refreshRates = getMinAndMaxRefresh(this)
 
         setContent {
+            // misc
+            /**
+             * < 0 : Return to min hz
+             * > 0 : Boost to max hz
+             * = 0 : Do nothing
+             */
+            var interaction by remember { mutableIntStateOf(0) }
+
+            // theming
             val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = true)
             val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
             val pureBlack by rememberPreference(PureBlackKey, defaultValue = false)
@@ -393,6 +417,28 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+
+            // boost refresh rate on interaction
+            LaunchedEffect(interaction) {
+                // do not boost if boost is already in effect
+                if (interaction > 0 && !interactionSession) { // start boost
+                    interactionSession = true
+                    setPreferredRefreshRate(this@MainActivity, refreshRates.second) // set to peak on interaction
+                    CoroutineScope(libDerpMgr).launch {
+                        while (interaction >= 0) {
+                            delay(1000)
+                            interaction--
+                        }
+
+                        // interaction is now less than 0, cancel boost
+                        withContext(Dispatchers.Main) {
+                            setPreferredRefreshRate(this@MainActivity, refreshRates.first) // set to min on idle
+                        }
+                        interaction = 0
+                        interactionSession = false
+                    }
+                }
+            }
             OuterTuneTheme(
                 darkTheme = useDarkTheme,
                 pureBlack = pureBlack,
@@ -402,6 +448,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surface)
+                        .pointerInput(Unit) {
+                            awaitEachGesture {
+                                val event = awaitPointerEvent()
+                                when (event.type) {
+                                    PointerEventType.Press,
+                                    PointerEventType.Move -> {
+                                        interaction = 4
+                                    }
+                                }
+                            }
+                        }
+
                 ) {
                     val focusManager = LocalFocusManager.current
                     val density = LocalDensity.current
@@ -1153,6 +1211,33 @@ class MainActivity : ComponentActivity() {
         const val ACTION_SONGS = "com.dd3boh.outertune.action.SONGS"
         const val ACTION_ALBUMS = "com.dd3boh.outertune.action.ALBUMS"
         const val ACTION_PLAYLISTS = "com.dd3boh.outertune.action.PLAYLISTS"
+
+        var interactionSession = false
+
+        /**
+         * Sets refresh rate
+         */
+        fun setPreferredRefreshRate(activity: Activity, refreshRate: Float) {
+            val window = activity.window
+            val layoutParams = window.attributes
+
+            if (layoutParams.preferredRefreshRate != refreshRate) {
+                layoutParams.preferredRefreshRate = refreshRate
+                window.attributes = layoutParams
+            } else {
+            }
+        }
+
+        fun getMinAndMaxRefresh(activity: Activity): Pair<Float, Float> {
+            // Google wai this deprecated? So when does this become breaking change that breaks on many API levels???
+            val display = activity.windowManager.defaultDisplay // Context.getDisplay requires 30 (R).
+            val refreshRates = display.supportedModes.map { it.refreshRate }
+
+            val minRefreshRate = refreshRates.minOrNull() ?: 60.0f
+            val maxRefreshRate = refreshRates.maxOrNull() ?: 60.0f
+
+            return Pair(minRefreshRate, maxRefreshRate)
+        }
     }
 }
 
