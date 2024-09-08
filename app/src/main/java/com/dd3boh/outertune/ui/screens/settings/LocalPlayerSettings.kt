@@ -115,6 +115,9 @@ fun LocalPlayerSettings(
         mutableStateOf(null)
     }
 
+    var showAddDlPath: Boolean by remember {
+        mutableStateOf(false)
+    }
     // scanner prefs
     val (scannerSensitivity, onScannerSensitivityChange) = rememberEnumPreference(
         key = ScannerSensitivityKey,
@@ -136,6 +139,77 @@ fun LocalPlayerSettings(
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
             .verticalScroll(rememberScrollState())
     ) {
+
+        Button(
+            onClick = {showAddDlPath =  true}
+        ) {
+            Text("show dl path picker ")
+        }
+        if (showAddDlPath) {
+            ActionPromptDialog(
+                titleBar = {
+                    Text(
+                        text = stringResource(
+                            if (showAddDlPath as Boolean) R.string.scan_paths_incl
+                            else R.string.scan_paths_excl
+                        ),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
+                onDismiss = {
+                    showAddDlPath = false
+                },
+                onConfirm = {
+                    if (showAddFolderDialog as Boolean) {
+                        onScanPathsChange(tempScanPaths)
+                    } else {
+                        onExcludedScanPathsChange(tempScanPaths)
+                    }
+
+                    showAddDlPath = false
+
+                },
+                onReset = {
+                    // reset to whitespace so not empty
+//                    tempScanPaths = if (showAddFolderDialog as Boolean) DEFAULT_SCAN_PATH else " "
+                },
+                onCancel = {
+                    showAddDlPath = false
+
+                }
+            ) {
+                val dirPickerLauncher = rememberLauncherForActivityResult(
+                    ActivityResultContracts.OpenDocumentTree()
+                ) { uri ->
+                    if (uri != null) {
+                        println("wtf: ${uri.path}")
+                    }
+//                if (uri?.path != null && !tempScanPaths.contains(uri.path!!)) {
+//                    if (tempScanPaths.isBlank()) {
+//                        tempScanPaths = "${uri.path}\n"
+//                    } else {
+//                        tempScanPaths += "${uri.path}\n"
+//                    }
+//                }
+                }
+
+                // add folder button
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = { dirPickerLauncher.launch(null) }) {
+                        Text(stringResource(R.string.scan_paths_add_folder))
+                    }
+
+                    InfoLabel(text = stringResource(R.string.scan_paths_tooltip))
+                }
+            }
+        }
+
+
+
+
+
         // automatic scanner
         SwitchPreference(
             title = { Text(stringResource(R.string.auto_scanner_title)) },
