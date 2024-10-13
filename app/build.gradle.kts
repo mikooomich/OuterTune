@@ -14,11 +14,11 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.dd3boh.outertune"
+        applicationId = "wah.mikooomich.outertune"
         minSdk = 24
         targetSdk = 35
         versionCode = 38
-        versionName = "0.7.4"
+        versionName = "0.7.4-mikooo-rev1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -89,7 +89,7 @@ android {
         variant.outputs
             .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
             .forEach { output ->
-                val outputFileName = "OuterTune-${variant.versionName}-${variant.baseName}.apk"
+                val outputFileName = "OuterTune-mikooo-${variant.versionName}-${variant.baseName}.apk"
                 output.outputFileName = outputFileName
             }
     }
