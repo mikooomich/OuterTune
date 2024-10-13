@@ -17,12 +17,15 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.dd3boh.outertune"
+        applicationId = "wah.mikooomich.outertune"
         minSdk = 24
         targetSdk = 36
         versionCode = 62
         versionName = "0.9.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        versionName += "-mikooo"
+        versionName += "-r1" // revision number
+
     }
     buildTypes {
         release {
