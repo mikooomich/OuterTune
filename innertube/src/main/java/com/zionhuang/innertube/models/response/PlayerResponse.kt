@@ -6,6 +6,7 @@ import io.ktor.http.URLBuilder
 import io.ktor.http.parseQueryString
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.schabi.newpipe.extractor.exceptions.ParsingException
 import org.schabi.newpipe.extractor.services.youtube.YoutubeJavaScriptPlayerManager
 
 /**
@@ -67,21 +68,6 @@ data class PlayerResponse(
         ) {
             val isAudio: Boolean
                 get() = width == null
-
-            fun findUrl(): String? {
-                this.url?.let {
-                    return it
-                }
-                this.signatureCipher?.let { signatureCipher ->
-                    val params = parseQueryString(signatureCipher)
-                    val obfuscatedSignature = params["s"] ?: return null
-                    val signatureParam = params["sp"] ?: return null
-                    val url = params["url"]?.let { URLBuilder(it) } ?: return null
-                    url.parameters[signatureParam] = YoutubeJavaScriptPlayerManager.deobfuscateSignature("", obfuscatedSignature)
-                    return YoutubeJavaScriptPlayerManager.getUrlWithThrottlingParameterDeobfuscated("", url.toString())
-                }
-                return null
-            }
         }
     }
 
