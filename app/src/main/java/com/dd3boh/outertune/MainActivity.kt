@@ -524,10 +524,19 @@ class MainActivity : ComponentActivity() {
                     val onSearch: (String) -> Unit = {
                         if (it.isNotEmpty()) {
                             onActiveChange(false)
-                            navController.navigate("search/${it.urlEncode()}")
-                            if (dataStore[PauseSearchHistoryKey] != true) {
-                                database.query {
-                                    insert(SearchHistory(query = it))
+
+//                            Timber.tag("TEST").d("query is "  + query.text)
+                            if (query.text.startsWith("https://www.youtube.com/playlist?list=")) {
+                                // if this looks extremly wip, insecure, and you shouldnt use it, well.... exactly that.
+//                                Timber.tag("TEST").d("(top)Hijacking search for playlist")
+                                navController.navigate("online_playlist/${query.text.substringAfter('=').substringBefore('&')}")
+
+                            }  else {
+                                navController.navigate("search/${it.urlEncode()}")
+                                if (dataStore[PauseSearchHistoryKey] != true) {
+                                    database.query {
+                                        insert(SearchHistory(query = it))
+                                    }
                                 }
                             }
                         }
@@ -840,10 +849,18 @@ class MainActivity : ComponentActivity() {
                                                     onQueryChange = onQueryChange,
                                                     navController = navController,
                                                     onSearch = {
-                                                        navController.navigate("search/${it.urlEncode()}")
-                                                        if (dataStore[PauseSearchHistoryKey] != true) {
-                                                            database.query {
-                                                                insert(SearchHistory(query = it))
+//                                                        Timber.tag("TEST").d("query is "  + query.text)
+                                                        if (query.text.startsWith("https://www.youtube.com/playlist?list=")) {
+                                                            // if this looks extremly wip, insecure, and you shouldnt use it, well.... exactly that.
+//                                                            Timber.tag("TEST").d("(bottom) Hijacking search for playlist")
+                                                            navController.navigate("online_playlist/${query.text.substringAfter('=').substringBefore('&')}")
+
+                                                        }  else {
+                                                            navController.navigate("search/${it.urlEncode()}")
+                                                            if (dataStore[PauseSearchHistoryKey] != true) {
+                                                                database.query {
+                                                                    insert(SearchHistory(query = it))
+                                                                }
                                                             }
                                                         }
                                                     },

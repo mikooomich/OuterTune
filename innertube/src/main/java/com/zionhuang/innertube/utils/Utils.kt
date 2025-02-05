@@ -1,8 +1,11 @@
 package com.zionhuang.innertube.utils
 
+import com.zionhuang.innertube.NewPipeUtils
 import com.zionhuang.innertube.YouTube
+import com.zionhuang.innertube.models.SongItem
 import com.zionhuang.innertube.pages.LibraryPage
 import com.zionhuang.innertube.pages.PlaylistPage
+import org.schabi.newpipe.extractor.Page
 import java.security.MessageDigest
 
 @JvmName("completedLibrary")
@@ -19,9 +22,34 @@ suspend fun Result<PlaylistPage>.completed(): Result<PlaylistPage> = runCatching
         playlist = page.playlist,
         songs = songs,
         songsContinuation = null,
-        continuation = page.continuation
+        continuation = page.continuation,
+        nextPage = page.nextPage
     )
 }
+
+suspend fun Result<PlaylistPage>.completedNew(): Result<PlaylistPage> = runCatching {
+    val page = getOrThrow()
+    val songs = page.songs.toMutableList()
+    var continuation = page.nextPage
+
+    while (continuation != null) {
+        val continuationPage = NewPipeUtils.getMorePlaylistItems(page.playlist.id, continuation).getOrThrow()
+        songs += continuationPage.first
+        continuation = continuationPage.second
+    }
+    PlaylistPage(
+        playlist = page.playlist,
+        songs = songs,
+        songsContinuation = null,
+        continuation = page.continuation,
+    )
+}
+
+fun Result<Pair<List<SongItem>, Page?>>.completed(): Result<Pair<List<SongItem>, Page?>> = runCatching {
+    val page = getOrThrow()
+    return@runCatching Pair(page.first.toMutableList(), page.second)
+}
+
 
 @JvmName("completedPlaylist")
 suspend fun Result<LibraryPage>.completed(): Result<LibraryPage> = runCatching {
@@ -35,7 +63,7 @@ suspend fun Result<LibraryPage>.completed(): Result<LibraryPage> = runCatching {
     }
     LibraryPage(
         items = items,
-        continuation = page.continuation
+        continuation = page.continuation,
     )
 }
 

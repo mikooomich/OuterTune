@@ -498,8 +498,8 @@ fun OnlinePlaylistScreen(
                             ) {
                                 SelectHeader(
                                     selectedItems = selection.map {
-                                            songs[it]
-                                        }.map { it.toMediaMetadata() },
+                                        songs[it]
+                                    }.map { it.toMediaMetadata() },
                                     totalItemCount = songs.size,
                                     onSelectAll = {
                                         selection.clear()

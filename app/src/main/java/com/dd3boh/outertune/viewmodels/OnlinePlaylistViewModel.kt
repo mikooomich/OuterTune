@@ -5,10 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dd3boh.outertune.db.MusicDatabase
 import com.dd3boh.outertune.utils.reportException
-import com.zionhuang.innertube.YouTube
+import com.zionhuang.innertube.NewPipeUtils
 import com.zionhuang.innertube.models.PlaylistItem
 import com.zionhuang.innertube.models.SongItem
-import com.zionhuang.innertube.utils.completed
+import com.zionhuang.innertube.utils.completedNew
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +31,7 @@ class OnlinePlaylistViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            YouTube.playlist(playlistId).completed()
+            NewPipeUtils.getPlaylistInfo(playlistId).completedNew()
                 .onSuccess { playlistPage ->
                     playlist.value = playlistPage.playlist
                     playlistSongs.value = playlistPage.songs

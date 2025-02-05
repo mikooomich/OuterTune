@@ -86,7 +86,7 @@ class SyncUtils @Inject constructor(
             Timber.tag(logTag).d("Liked songs synchronization started")
 
             // Get remote and local liked songs
-            YouTube.playlist("LM").completed().onSuccess{ page->
+            YouTube.playlist("LM").completed().onSuccess { page->
                 if (!context.isInternetConnected()) {
                     return
                 }

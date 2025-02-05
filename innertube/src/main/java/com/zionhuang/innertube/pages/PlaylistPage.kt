@@ -7,12 +7,14 @@ import com.zionhuang.innertube.models.PlaylistItem
 import com.zionhuang.innertube.models.SongItem
 import com.zionhuang.innertube.models.oddElements
 import com.zionhuang.innertube.utils.parseTime
+import org.schabi.newpipe.extractor.Page
 
 data class PlaylistPage(
     val playlist: PlaylistItem,
     val songs: List<SongItem>,
     val songsContinuation: String?,
     val continuation: String?,
+    val nextPage: Page? = null
 ) {
     companion object {
         fun fromMusicResponsiveListItemRenderer(renderer: MusicResponsiveListItemRenderer): SongItem? {

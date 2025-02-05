@@ -290,6 +290,7 @@ object YouTube {
         }
     }
 
+    @Deprecated("use getMorePlaylistItems and getPlaylistInfo")
     suspend fun playlist(playlistId: String): Result<PlaylistPage> = runCatching {
         val response = innerTube.browse(
             client = WEB_REMIX,
