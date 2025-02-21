@@ -332,4 +332,6 @@
     <string name="new_version_available">New version available</string>
     <string name="translation_models">Translation Models</string>
     <string name="clear_translation_models">Clear translation models</string>
+    <string name="simple_queue">Simple queue mode</string>
+    <string name="simple_queue_desc">Use the simplified queue mode. This includes disabling multiple queues.</string>
 </resources>
