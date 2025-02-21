@@ -48,6 +48,7 @@ import com.dd3boh.outertune.constants.AudioQualityKey
 import com.dd3boh.outertune.constants.AutoLoadMoreKey
 import com.dd3boh.outertune.constants.KeepAliveKey
 import com.dd3boh.outertune.constants.PersistentQueueKey
+import com.dd3boh.outertune.constants.SimpleQueueKey
 import com.dd3boh.outertune.constants.SkipOnErrorKey
 import com.dd3boh.outertune.constants.SkipSilenceKey
 import com.dd3boh.outertune.constants.StopMusicOnTaskClearKey
@@ -73,6 +74,7 @@ fun PlayerSettings(
         defaultValue = AudioQuality.AUTO
     )
     val (persistentQueue, onPersistentQueueChange) = rememberPreference(key = PersistentQueueKey, defaultValue = true)
+    val (simpleQueue, onSimpleQueueChange) = rememberPreference(key = SimpleQueueKey, defaultValue = true)
     val (skipSilence, onSkipSilenceChange) = rememberPreference(key = SkipSilenceKey, defaultValue = false)
     val (skipOnErrorKey, onSkipOnErrorChange) = rememberPreference(key = SkipOnErrorKey, defaultValue = true)
     val (audioNormalization, onAudioNormalizationChange) = rememberPreference(
@@ -125,6 +127,13 @@ fun PlayerSettings(
             icon = { Icon(Icons.AutoMirrored.Rounded.QueueMusic, null) },
             checked = persistentQueue,
             onCheckedChange = onPersistentQueueChange
+        )
+        SwitchPreference(
+            title = { Text(stringResource(R.string.simple_queue)) },
+            description = stringResource(R.string.simple_queue_desc),
+            icon = { Icon(Icons.AutoMirrored.Rounded.QueueMusic, null) },
+            checked = simpleQueue,
+            onCheckedChange = onSimpleQueueChange
         )
         SwitchPreference(
             title = { Text(stringResource(R.string.auto_load_more)) },
