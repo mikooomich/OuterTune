@@ -18,7 +18,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 39
-        versionName = "0.7.5-mikooo-rev0"
+        versionName = "0.7.5-mikooo-final"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
