@@ -47,6 +47,7 @@ class PoTokenWebView private constructor(
         //noinspection SetJavaScriptEnabled we want to use JavaScript!
         webViewSettings.javaScriptEnabled = true
         webViewSettings.safeBrowsingEnabled = false
+
         webViewSettings.userAgentString = USER_AGENT
         webViewSettings.blockNetworkLoads = true // the WebView does not need internet access
 
