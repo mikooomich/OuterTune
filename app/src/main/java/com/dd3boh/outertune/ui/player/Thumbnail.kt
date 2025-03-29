@@ -62,7 +62,6 @@ fun Thumbnail(
     sliderPositionProvider: () -> Long?,
     modifier: Modifier = Modifier,
     showLyricsOnClick: Boolean = false,
-    contentScale: ContentScale = ContentScale.Fit,
     customMediaMetadata: MediaMetadata? = null
 ) {
     val haptic = LocalHapticFeedback.current
@@ -110,7 +109,7 @@ fun Thumbnail(
                             AsyncImageLocal(
                                 image = { imageCache.getLocalThumbnail(it.localPath, false) },
                                 contentDescription = null,
-                                contentScale = contentScale,
+                                contentScale = ContentScale.Fit,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(ThumbnailCornerRadius * 2))
                                     .aspectRatio(ratio = 1f)
@@ -125,7 +124,7 @@ fun Thumbnail(
                         AsyncImage(
                             model = mediaMetadata?.thumbnailUrl,
                             contentDescription = null,
-                            contentScale = contentScale,
+                            contentScale = ContentScale.Fit,
                             onSuccess = { success ->
                                 val width = success.result.drawable.intrinsicWidth
                                 val height = success.result.drawable.intrinsicHeight
