@@ -385,9 +385,6 @@ AND NOT EXISTS (
     @Delete
     fun delete(item: RecentActivityEntity)
 
-    @Query("DELETE FROM recent_activity")
-    fun clearRecentActivity()
-
     @Transaction
     fun insertRecentActivityItem(item: YTItem) {
         when (item) {
