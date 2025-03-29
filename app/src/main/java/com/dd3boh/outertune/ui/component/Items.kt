@@ -1334,7 +1334,7 @@ fun YouTubeGridItem(
 
 @Composable
 fun YouTubeCardItem(
-    item: RecentActivityEntity,
+    item: YTItem,
     modifier: Modifier = Modifier,
     isActive: Boolean,
     isPlaying: Boolean,
