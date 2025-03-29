@@ -441,7 +441,4 @@ AND NOT EXISTS (
             }
         }
     }
-
-    @Query("SELECT * FROM recent_activity ORDER BY date DESC")
-    fun recentActivity(): Flow<List<RecentActivityEntity>>
 }
