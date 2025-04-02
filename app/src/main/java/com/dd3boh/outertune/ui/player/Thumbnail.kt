@@ -90,7 +90,6 @@ fun Thumbnail(
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
-            var isRectangularImage by remember { mutableStateOf(false) }
 
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -124,40 +123,11 @@ fun Thumbnail(
                             model = mediaMetadata?.thumbnailUrl,
                             contentDescription = null,
                             contentScale = ContentScale.Fit,
-                            onSuccess = { success ->
-                                val width = success.result.drawable.intrinsicWidth
-                                val height = success.result.drawable.intrinsicHeight
-
-                                isRectangularImage = width.toFloat() / height != 1f
-                            },
                             modifier = Modifier
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(ThumbnailCornerRadius * 2))
                                 .clickable(enabled = showLyricsOnClick) { showLyrics = !showLyrics }
                         )
-                    }
-
-                    if (isRectangularImage) {
-                        val radial = Brush.radialGradient(
-                            0.0f to Color.Black.copy(alpha = 0.5f),
-                            0.8f to Color.Black.copy(alpha = 0.05f),
-                            1.0f to Color.Transparent,
-                        )
-
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .size(maxHeight / 8)
-                                .offset(x = -maxHeight / 75)
-                                .background(brush = radial, shape = CircleShape)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.OndemandVideo,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
                     }
                 }
             }
