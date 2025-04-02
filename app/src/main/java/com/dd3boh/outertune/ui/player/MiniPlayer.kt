@@ -170,7 +170,6 @@ fun MiniMediaInfo(
                 .padding(6.dp)
                 .size(48.dp)
         ) {
-            var isRectangularImage by remember { mutableStateOf(false) }
 
             if (mediaMetadata.isLocal) {
                 // local thumbnail arts
@@ -187,40 +186,10 @@ fun MiniMediaInfo(
                     model = mediaMetadata.thumbnailUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    onSuccess = { success ->
-                        val width = success.result.drawable.intrinsicWidth
-                        val height = success.result.drawable.intrinsicHeight
-
-                        isRectangularImage = width.toFloat() / height != 1f
-                    },
                     modifier = Modifier
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(ThumbnailCornerRadius))
                 )
-            }
-
-            if (isRectangularImage) {
-                val radial = Brush.radialGradient(
-                    0.0f to Color.Black.copy(alpha = 0.5f),
-                    0.8f to Color.Black.copy(alpha = 0.05f),
-                    1.0f to Color.Transparent,
-                )
-
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size((maxHeight / 3) + 6.dp)
-                        .offset(x = -maxHeight / 25)
-                        .background(brush = radial, shape = CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.OndemandVideo,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.padding(3.dp)
-                    )
-                }
             }
 
             androidx.compose.animation.AnimatedVisibility(
