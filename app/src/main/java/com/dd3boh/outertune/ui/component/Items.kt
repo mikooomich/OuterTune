@@ -1443,7 +1443,6 @@ fun ItemThumbnail(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        var isRectangularImage by remember { mutableStateOf(false) }
 
         if (albumIndex != null) {
             AnimatedVisibility(
@@ -1470,40 +1469,10 @@ fun ItemThumbnail(
             AsyncImage(
                 model = thumbnailUrl,
                 contentDescription = null,
-                onSuccess = { success ->
-                    val width = success.result.drawable.intrinsicWidth
-                    val height = success.result.drawable.intrinsicHeight
-
-                    isRectangularImage = width.toFloat() / height != 1f
-                },
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(shape)
             )
-        }
-
-        if (isRectangularImage) {
-            val radial = Brush.radialGradient(
-                0.0f to Color.Black.copy(alpha = 0.5f),
-                0.8f to Color.Black.copy(alpha = 0.05f),
-                1.0f to Color.Transparent,
-            )
-
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .size((maxHeight / 3) + 6.dp)
-                    .offset(x = -maxHeight / 25)
-                    .background(brush = radial, shape = CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.OndemandVideo,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.padding(3.dp)
-                )
-            }
         }
 
         PlayingIndicatorBox(
