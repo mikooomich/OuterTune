@@ -1,0 +1,4 @@
+[submodule "ffMetadataEx"]
+	path = ffMetadataEx
+	url = https://github.com/OuterTune/ffMetadataEx
+	branch = module
