@@ -10,12 +10,18 @@ package com.dd3boh.outertune.utils.scanners
 
 import android.content.Context
 import android.media.MediaPlayer
+import android.media.MediaScannerConnection
+import android.media.MediaScannerConnection.OnScanCompletedListener
+import android.net.Uri
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEach
 import androidx.datastore.preferences.core.edit
 import com.dd3boh.outertune.constants.AutomaticScannerKey
+import com.dd3boh.outertune.constants.SCANNER_DEBUG
+import com.dd3boh.outertune.constants.SYNC_SCANNER
 import com.dd3boh.outertune.constants.ScannerImpl
 import com.dd3boh.outertune.constants.ScannerImplKey
 import com.dd3boh.outertune.constants.ScannerMatchCriteria
@@ -28,11 +34,11 @@ import com.dd3boh.outertune.db.entities.SongGenreMap
 import com.dd3boh.outertune.models.DirectoryTree
 import com.dd3boh.outertune.models.SongTempData
 import com.dd3boh.outertune.models.toMediaMetadata
-import com.dd3boh.outertune.constants.SCANNER_DEBUG
 import com.dd3boh.outertune.ui.utils.STORAGE_ROOT
 import com.dd3boh.outertune.constants.SYNC_SCANNER
 import com.dd3boh.outertune.db.entities.Artist
 import com.dd3boh.outertune.models.CulmSongs
+import com.dd3boh.outertune.ui.utils.cacheDirectoryTree
 import com.dd3boh.outertune.ui.utils.scannerSession
 import com.dd3boh.outertune.utils.closestMatch
 import com.dd3boh.outertune.utils.dataStore
@@ -43,15 +49,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.time.LocalDateTime
 import java.util.Locale
+import java.util.concurrent.locks.ReentrantLock
 
 
 class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
@@ -145,6 +155,21 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
         val newDirectoryStructure = DirectoryTree(STORAGE_ROOT, CulmSongs(0))
         Log.i(TAG, "------------ SCAN: Starting Full Scanner ------------")
         scannerShowLoading.value = true
+
+        Log.i(TAG, "------------ SCAN: Start MediaStore scan start ------------")
+        MediaScannerConnection.scanFile(
+            context, scanPaths.toTypedArray(), null,
+            object : OnScanCompletedListener {
+                override fun onScanCompleted(path: String?, uri: Uri?) {
+                    Log.v(TAG, "MediaStore scanner found: $path")
+                }
+
+            }
+        )
+        runBlocking {
+            delay(5000)
+        }
+        Log.i(TAG, "------------ SCAN: Start MediaStore scan end ------------")
 
         val scannerJobs = ArrayList<Deferred<SongTempData?>>()
         runBlocking {
