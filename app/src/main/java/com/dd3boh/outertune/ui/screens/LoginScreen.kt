@@ -28,6 +28,7 @@ import com.dd3boh.outertune.constants.AccountEmailKey
 import com.dd3boh.outertune.constants.AccountNameKey
 import com.dd3boh.outertune.constants.DataSyncIdKey
 import com.dd3boh.outertune.constants.InnerTubeCookieKey
+import com.dd3boh.outertune.constants.TopBarInsets
 import com.dd3boh.outertune.constants.VisitorDataKey
 import com.dd3boh.outertune.ui.component.IconButton
 import com.dd3boh.outertune.ui.utils.backToMain
@@ -115,7 +116,8 @@ fun LoginScreen(
                     contentDescription = null
                 )
             }
-        }
+        },
+        windowInsets = TopBarInsets,
     )
 
     BackHandler(enabled = webView?.canGoBack() == true) {
