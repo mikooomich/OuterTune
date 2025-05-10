@@ -163,4 +163,11 @@
     <string name="missing_media_permission_warning">Для доступа к локальным медиафайлам требуется разрешение на доступ к хранилищу. Нажмите, чтобы предоставить разрешение.</string>
     <string name="sync_mode_ro">Только чтение (просмотр удаленного контента)</string>
     <string name="grp_library_and_content">Библиотека и контент</string>
+    <string name="grp_sync">Синхронизация</string>
+    <string name="check_for_update">Проверить обновления</string>
+    <string name="checking_for_update">Поиск обновлений</string>
+    <string name="no_updates_available">Обновления не найдены</string>
+    <string name="playlist_missing_note">Не отображаются плейлисты? Нажмите здесь, чтобы переключить синхронизацию в режим чтения-записи в настройках</string>
+    <string name="grp_behavior">Поведение</string>
+    <string name="library_empty">Здесь появится содержимое вашей библиотеки</string>
 </resources>
