@@ -9,6 +9,9 @@
 package com.dd3boh.outertune.playback
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.neverEqualPolicy
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.util.fastFirst
 import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEachIndexed
@@ -46,11 +49,14 @@ const val MAX_QUEUES = 20
 class QueueBoard(private val player: MusicService, queues: MutableList<MultiQueueObject> = ArrayList()) {
     private val TAG = QueueBoard::class.simpleName.toString()
 
-    private val masterQueues: MutableList<MultiQueueObject> = queues
+    val masterQueues: SnapshotStateList<MultiQueueObject> = mutableStateListOf()
     private var masterIndex = masterQueues.size - 1 // current queue index
     var detachedHead = false
     var initialized = false
 
+    init {
+        masterQueues.addAll(queues)
+    }
 
     /**
      * ========================
