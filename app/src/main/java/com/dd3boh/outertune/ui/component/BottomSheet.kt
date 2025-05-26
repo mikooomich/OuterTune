@@ -186,7 +186,7 @@ class BottomSheetState(
     fun expand(animationSpec: AnimationSpec<Dp>) {
         onAnchorChanged(expandedAnchor)
         coroutineScope.launch {
-            animatable.animateTo(animatable.upperBound!!, animationSpec)
+            animatable. snapTo(animatable.upperBound!!)
         }
     }
 
