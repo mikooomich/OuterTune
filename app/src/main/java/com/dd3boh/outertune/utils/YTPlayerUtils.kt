@@ -169,9 +169,10 @@ object YTPlayerUtils {
                 }
                 if (validateStatus(streamUrl)) {
                     // working stream found
+                    Log.i(TAG, "[$videoId] [${client.clientName}] found working stream")
                     break
                 } else {
-                    Log.d(TAG, "[$videoId] [${client.clientName}] got bad http status code")
+                    Log.w(TAG, "[$videoId] [${client.clientName}] got bad http status code")
                 }
             }
         }
