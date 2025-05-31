@@ -9,6 +9,8 @@ plugins {
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.compose.compiler)
+
+    alias(libs.plugins.aboutlibraries)
 }
 
 android {
@@ -194,6 +196,9 @@ dependencies {
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.serialization.json)
+
+    implementation(libs.aboutlibraries.core)
+    implementation(libs.aboutlibraries.compose.m3)
 
     /*
     "JitPack builds are broken with the latest CMake version.

@@ -1,4 +1,5 @@
 [versions]
+aboutLibraries = "12.2.0"
 adaptive = "1.1.0"
 androidGradlePlugin = "8.9.1"
 annotation = "1.9.1"
@@ -78,8 +79,14 @@ taglib = { group = "com.github.Kyant0", name = "taglib", version.ref = "taglib" 
 #newpipe-extractor = { group = "com.github.TeamNewPipe", name = "NewPipeExtractor", version = "v0.24.5" }
 newpipe-extractor = { group = "com.github.libre-tube", name = "NewPipeExtractor", version = "bc9a5a220e" }
 
+
+aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
+aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
+
 [plugins]
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+aboutlibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
