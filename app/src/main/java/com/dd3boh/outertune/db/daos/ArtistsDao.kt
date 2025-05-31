@@ -51,6 +51,9 @@ interface ArtistsDao {
     @Query("SELECT * FROM artist WHERE name = :name")
     fun artistByName(name: String): ArtistEntity?
 
+    @Query("SELECT * FROM artist WHERE name LIKE '%' || :name || '%'")
+    fun artistLikeName(name: String): Flow<List<ArtistEntity>>
+
     @Query("""
         SELECT 
             artist.*,
@@ -236,10 +239,6 @@ interface ArtistsDao {
     @Transaction
     @Query("UPDATE song_artist_map SET artistId = :newId WHERE artistId = :oldId")
     fun updateSongArtistMap(oldId: String, newId: String)
-
-    @Transaction
-    @Query("UPDATE song_artist_map SET artistId = :newId, position = :pos WHERE artistId = :oldId")
-    fun updateSongArtistMap(oldId: String, newId: String, pos: Int)
     // endregion
 
     // region Deletes
