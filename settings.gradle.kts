@@ -44,3 +44,5 @@ include(":material-color-utilities")
 //        substitute(module("com.kyant:taglib"))
 //    }
 //}
+
+include(":ffMetadataEx")

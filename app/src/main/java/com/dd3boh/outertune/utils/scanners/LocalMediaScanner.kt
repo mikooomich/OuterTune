@@ -16,6 +16,7 @@ import androidx.compose.ui.util.fastFirstOrNull
 import androidx.compose.ui.util.fastForEach
 import androidx.datastore.preferences.core.edit
 import com.dd3boh.outertune.constants.AutomaticScannerKey
+import com.dd3boh.outertune.constants.ENABLE_FFMETADATAEX
 import com.dd3boh.outertune.constants.SCANNER_DEBUG
 import com.dd3boh.outertune.constants.SYNC_SCANNER
 import com.dd3boh.outertune.constants.ScannerImpl
@@ -38,6 +39,7 @@ import com.dd3boh.outertune.utils.closestMatch
 import com.dd3boh.outertune.utils.dataStore
 import com.dd3boh.outertune.utils.reportException
 import com.zionhuang.innertube.YouTube
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -46,6 +48,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.io.FileNotFoundException
@@ -53,17 +56,17 @@ import java.io.IOException
 import java.time.LocalDateTime
 import java.util.Locale
 
+class FFM
 
 class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
     private val TAG = LocalMediaScanner::class.simpleName.toString()
     private var advancedScannerImpl: MetadataScanner = when (scannerImpl) {
-//        ScannerImpl.TAGLIB -> TagLibScanner()
-//        ScannerImpl.FFMPEG_EXT -> FFMpegScanner(context)
-        else -> TagLibScanner()
+        ScannerImpl.TAGLIB -> TagLibScanner()
+        ScannerImpl.FFMPEG_EXT -> if (ENABLE_FFMETADATAEX) FFMpegScanner() else TagLibScanner()
     }
 
     init {
-        Log.i(TAG, "Creating scanner instance with scannerImpl: $scannerImpl")
+        Log.i(TAG, "Creating scanner instance with scannerImpl:  ${advancedScannerImpl.javaClass.name}, requested: $scannerImpl")
         testPlayer = MediaPlayer()
     }
 
@@ -82,7 +85,7 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
 
 
             // decide which scanner to use
-            val ffmpegData = if (false && advancedScannerImpl !is TagLibScanner) {
+            val ffmpegData = if (ENABLE_FFMETADATAEX && advancedScannerImpl is FFMpegScanner) {
                 advancedScannerImpl.getAllMetadataFromPath(path)
             } else if (advancedScannerImpl is TagLibScanner) {
                 advancedScannerImpl.getAllMetadataFromFile(File(path))
@@ -146,6 +149,7 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
         val newDirectoryStructure = DirectoryTree(STORAGE_ROOT, CulmSongs(0))
         Log.i(TAG, "------------ SCAN: Starting Full Scanner ------------")
         scannerShowLoading.value = true
+        scannerProgressProbe = 0
 
         val scannerJobs = ArrayList<Deferred<SongTempData?>>()
         runBlocking {
@@ -298,8 +302,8 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
             if (SCANNER_DEBUG && runs % 20 == 0) {
                 Log.d(TAG, "------------ SYNC: Local Library Sync: $runs/${finalSongs.size} processed ------------")
             }
-            if (runs % 5 == 0) {
-                scannerProgressCurrent.value += 5
+            if (runs % 20 == 0) {
+                scannerProgressCurrent.value += 20
             }
 
             if (scannerRequestCancel) {
@@ -855,24 +859,18 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
          */
         fun getScanner(context: Context, scannerImpl: ScannerImpl, owner: Int): LocalMediaScanner {
 
-            /*
-            if the FFmpeg extractor is suddenly removed and a scan is ran, reset to taglib, disable auto scanner.
-            we don't want to run the taglib scanner fallback if the user explicitly selected FFmpeg as differences
-            can muck with the song detection. Throw the error to the ui where it can be handled there
-             */
-            if (scannerImpl != ScannerImpl.TAGLIB) {
-                runBlocking {
-                    context.dataStore.edit { settings ->
-                        settings[ScannerImplKey] = ScannerImpl.TAGLIB.toString()
-                        settings[AutomaticScannerKey] = false
+            if (localScanner == null) {
+                // reset to taglib if ffMetadataEx disappears
+                if (scannerImpl == ScannerImpl.FFMPEG_EXT && !ENABLE_FFMETADATAEX) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        context.dataStore.edit { settings ->
+                            settings[ScannerImplKey] = ScannerImpl.TAGLIB.toString()
+                            settings[AutomaticScannerKey] = false
+                            // TODO: toast user maybe...?
+                        }
                     }
                 }
-                throw ScannerAbortException("FFmpeg extractor was selected, but the package is no longer available. Reset to taglib scanner and disabled automatic scanning")
-            }
-
-            if (localScanner == null) {
-                localScanner = LocalMediaScanner(context, ScannerImpl.TAGLIB)
-//                localScanner = LocalMediaScanner(context, if (isFFmpegInstalled) scannerImpl else ScannerImpl.TAGLIB)
+                localScanner = LocalMediaScanner(context, scannerImpl)
                 testPlayer = MediaPlayer()
                 scannerProgressTotal.value = 0
                 scannerProgressCurrent.value = -1
@@ -1148,3 +1146,14 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
 class InvalidAudioFileException(message: String) : Throwable(message)
 class ScannerAbortException(message: String) : Throwable(message)
 class ScannerCriticalFailureException(message: String) : Throwable(message)
+
+// remove if building with the submodule
+class FFMpegScanner() : MetadataScanner {
+    override fun getAllMetadataFromPath(path: String): SongTempData {
+        throw NotImplementedError()
+    }
+
+    override fun getAllMetadataFromFile(file: File): SongTempData {
+        throw NotImplementedError()
+    }
+}

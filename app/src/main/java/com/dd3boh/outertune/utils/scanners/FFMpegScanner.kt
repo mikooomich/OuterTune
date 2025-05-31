@@ -19,6 +19,7 @@ import com.dd3boh.outertune.models.SongTempData
 import com.dd3boh.outertune.ui.utils.ARTIST_SEPARATORS
 import com.dd3boh.outertune.constants.DEBUG_SAVE_OUTPUT
 import com.dd3boh.outertune.constants.EXTRACTOR_DEBUG
+import com.dd3boh.outertune.models.MediaMetadata
 import com.dd3boh.outertune.ui.utils.EXTRACTOR_TAG
 import wah.mikooomich.ffMetadataEx.AudioMetadata
 import wah.mikooomich.ffMetadataEx.FFMpegWrapper
@@ -81,12 +82,55 @@ class FFMpegScanner() : MetadataScanner {
         var channels: Int = data.channels
         var duration: Long = (data.duration / toSeconds).roundToLong()
 
+        var artistList: MutableList<ArtistEntity> = ArrayList<ArtistEntity>()
+        var genresList: MutableList<GenreEntity> = ArrayList<GenreEntity>()
+
         // read extra data from FFmpeg
+        // album, artist, genre, title all have their own fields, but it is not detected for all songs. We use the
+        // extra values to supplement those.
         data.extrasRaw.forEach {
-            val tag = it.substringBefore(':')
+            val tag = it.substringBefore(':').trim()
             when (tag) {
                 // why the fsck does an error here get swallowed silently????
-                "DATE", "date" -> rawDate = it.substringAfter(':')
+                "ALBUM", "album" -> {
+                    if (albumName == null) {
+                        albumName = it.substringAfter(':').trim()
+                    }
+                }
+
+                "ARTISTS", "ARTIST", "artist" -> {
+                    val splitArtists = it.split(ARTIST_SEPARATORS)
+                    splitArtists.forEach { artistVal ->
+                        artistList.add(
+                            ArtistEntity(
+                                ArtistEntity.generateArtistId(),
+                                artistVal.substringAfter(':').trim(),
+                                isLocal = true
+                            )
+                        )
+                    }
+                }
+
+                "DATE", "date" -> rawDate = it.substringAfter(':').trim()
+                "GENRE", "genre" -> {
+                    val splitGenres = it.split(ARTIST_SEPARATORS)
+                    splitGenres.forEach { genreVal ->
+                        genresList.add(
+                            GenreEntity(
+                                GenreEntity.generateGenreId(),
+                                genreVal.substringAfter(':').trim(),
+                                isLocal = true
+                            )
+                        )
+                    }
+                }
+
+                "TITLE", "title" -> {
+                    if (rawTitle == null) {
+                        rawTitle = it.substringAfter(':').trim()
+                    }
+                }
+
                 else -> ""
             }
         }
@@ -117,8 +161,6 @@ class FFMpegScanner() : MetadataScanner {
          * Parse the more complicated structures
          */
 
-        val artistList = ArrayList<ArtistEntity>()
-        val genresList = ArrayList<GenreEntity>()
         var year: Int? = null
         var date: LocalDateTime? = null
 
@@ -157,6 +199,8 @@ class FFMpegScanner() : MetadataScanner {
             // user error at this point. I am not parsing all the weird ways the string can come in
         }
 
+        artistList = artistList.filterNot { it.name.isBlank() }.distinctBy { it.name }.toMutableList()
+        genresList = genresList.filterNot { it.title.isBlank() }.distinctBy { it.title }.toMutableList()
 
         return SongTempData(
             Song(

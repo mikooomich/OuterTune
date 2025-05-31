@@ -10,6 +10,7 @@ package com.dd3boh.outertune.ui.screens.settings.fragments
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.dd3boh.outertune.R
+import com.dd3boh.outertune.constants.ENABLE_FFMETADATAEX
 import com.dd3boh.outertune.constants.ScannerImpl
 import com.dd3boh.outertune.constants.ScannerImplKey
 import com.dd3boh.outertune.constants.ScannerMatchCriteria
@@ -67,27 +69,19 @@ fun ColumnScope.LocalScannerExtraFrag() {
         onCheckedChange = onStrictExtensionsChange
     )
     // scanner type
-//    EnumListPreference(
-//        title = { Text(stringResource(R.string.scanner_type_title)) },
-//        icon = { Icon(Icons.Rounded.Speed, null) },
-//        selectedValue = scannerImpl,
-//        onValueSelected = {
-//            if (it == ScannerImpl.FFMPEG_EXT && isFFmpegInstalled) {
-//                onScannerImplChange(it)
-//            } else {
-//                Toast.makeText(context, context.getString(R.string.scanner_missing_ffmpeg), Toast.LENGTH_LONG)
-//                    .show()
-//                // Explicitly revert to TagLib if FFmpeg is not available
-//                onScannerImplChange(ScannerImpl.TAGLIB)
-//            }
-//        },
-//        valueText = {
-//            when (it) {
-//                ScannerImpl.TAGLIB -> stringResource(R.string.scanner_type_taglib)
-//                ScannerImpl.FFMPEG_EXT -> stringResource(R.string.scanner_type_ffmpeg_ext)
-//            }
-//        },
-//        values = ScannerImpl.entries,
-//        disabled = { it == ScannerImpl.FFMPEG_EXT && !isFFmpegInstalled }
-//    )
+    if (ENABLE_FFMETADATAEX) {
+        EnumListPreference(
+            title = { Text(stringResource(R.string.scanner_type_title)) },
+            icon = { Icon(Icons.Rounded.Speed, null) },
+            selectedValue = scannerImpl,
+            onValueSelected = onScannerImplChange,
+            valueText = {
+                when (it) {
+                    ScannerImpl.TAGLIB -> stringResource(R.string.scanner_type_taglib)
+                    ScannerImpl.FFMPEG_EXT -> stringResource(R.string.scanner_type_ffmpeg_ext)
+                }
+            },
+            values = ScannerImpl.entries,
+        )
+    }
 }
