@@ -434,7 +434,12 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
                     if (SCANNER_DEBUG)
                         Log.v(TAG, "NOT found in database, adding song: ${song.song.title}")
 
-                    database.insert(song.song.toMediaMetadata())
+                    database.transaction {
+                        insert(song.song.toMediaMetadata())
+                        song.format?.let {
+                            upsert(it.copy(id = song.song.id))
+                        }
+                    }
                 }
             }
         }
