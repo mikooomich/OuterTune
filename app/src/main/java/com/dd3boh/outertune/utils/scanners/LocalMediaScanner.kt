@@ -67,7 +67,6 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
 
     init {
         Log.i(TAG, "Creating scanner instance with scannerImpl:  ${advancedScannerImpl.javaClass.name}, requested: $scannerImpl")
-        testPlayer = MediaPlayer()
     }
 
     /**
@@ -79,9 +78,10 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
     ): SongTempData {
         try {
             // test if system can play
-            testPlayer!!.setDataSource(path)
-            testPlayer!!.prepare()
-            testPlayer!!.reset()
+            val testPlayer = MediaPlayer()
+            testPlayer.setDataSource(path)
+            testPlayer.prepare()
+            testPlayer.release()
 
 
             // decide which scanner to use
@@ -833,7 +833,6 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
 
         private var ownerId = -1
         private var localScanner: LocalMediaScanner? = null
-        var testPlayer: MediaPlayer? = null
 
         /**
          * TODO: Create a lock for background jobs like youtubeartists and etc
@@ -871,7 +870,6 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
                     }
                 }
                 localScanner = LocalMediaScanner(context, scannerImpl)
-                testPlayer = MediaPlayer()
                 scannerProgressTotal.value = 0
                 scannerProgressCurrent.value = -1
                 scannerProgressProbe = 0
@@ -887,7 +885,6 @@ class LocalMediaScanner(val context: Context, val scannerImpl: ScannerImpl) {
                 return
             }
             ownerId = -1
-            testPlayer?.release()
             localScanner = null
             scannerActive.value = false
             scannerShowLoading.value = false
