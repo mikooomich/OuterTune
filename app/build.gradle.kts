@@ -18,7 +18,7 @@ android {
 
     defaultConfig {
         applicationId = "wah.mikooomich.outertune"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 64
         versionName = "0.9.2"
@@ -206,10 +206,6 @@ dependencies {
 //    implementation(libs.taglib) // jitpack
     implementation(files("../prebuilt/taglib-1.0.2-outertune-universal-release.aar")) // prebuilt
 //    implementation("com.kyant:taglib") // custom
-
-    // sdk24 support
-    // Support for N is officially unsupported even it the app should still work. Leave this outside of the version catalog.
-    implementation("androidx.webkit:webkit:1.14.0")
 }
 
 afterEvaluate {

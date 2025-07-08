@@ -8,8 +8,6 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import androidx.annotation.MainThread
 import androidx.collection.ArrayMap
-import androidx.webkit.WebSettingsCompat
-import androidx.webkit.WebViewFeature
 import com.dd3boh.outertune.BuildConfig
 import com.zionhuang.innertube.YouTube
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -48,10 +46,7 @@ class PoTokenWebView private constructor(
         val webViewSettings = webView.settings
         //noinspection SetJavaScriptEnabled we want to use JavaScript!
         webViewSettings.javaScriptEnabled = true
-//        webViewSettings.safeBrowsingEnabled = false // sdk24 support
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.SAFE_BROWSING_ENABLE)) {
-            WebSettingsCompat.setSafeBrowsingEnabled(webViewSettings, false)
-        }
+        webViewSettings.safeBrowsingEnabled = false
         webViewSettings.userAgentString = USER_AGENT
         webViewSettings.blockNetworkLoads = true // the WebView does not need internet access
 
