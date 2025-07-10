@@ -328,14 +328,13 @@ fun Lyrics(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp, vertical = 8.dp)
-                            .alpha(if (!isSynced || index == displayedCurrentLineIndex) 1f else 0.5f)
                             .clickable(enabled = isSynced && item.isClickable) {
                                 playerConnection.player.seekTo(item.start.toLong())
                                 lastPreviewTime = 0L
                                 haptic.performHapticFeedback(HapticFeedbackType.ToggleOn)
                             }
                     ) {
-                        if (index == displayedCurrentLineIndex && lyricsFancy && item.words != null
+                        if (currentPos.toULong() in item.start..item.end && lyricsFancy && item.words != null
                             && !context.isPowerSaver()
                         ) { // word by word
                             // now do eye bleach to make lyric line babies
@@ -391,7 +390,8 @@ fun Lyrics(
                                     LyricsPosition.CENTER -> TextAlign.Center
                                     LyricsPosition.RIGHT -> TextAlign.Right
                                 },
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.alpha(if (!isSynced || index == displayedCurrentLineIndex) 1f else 0.5f)
                             )
                         }
                     }
@@ -471,7 +471,7 @@ fun Lyrics(
 fun HorizontalReveal(
     progress: Float,
     modifier: Modifier = Modifier,
-    backgroundAlpha: Float = 0.3f,
+    backgroundAlpha: Float = 0.5f,
     rtl: Boolean = false,
     content: @Composable () -> Unit
 ) {
