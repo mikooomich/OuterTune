@@ -10,7 +10,7 @@ body:
       options:
         - label: I am able to reproduce the bug with the [latest debug version](https://github.com/OuterTune/OuterTune/actions) AND any logs I have attached are taken with the DEBUG version (NOT release).
           required: true
-        - label: I've checked that there is no open or closed issue about this bug.
+        - label: I've checked that there is no open or closed issue about this bug. [CHECK THE ISSUE TRACKER HERE](https://github.com/OuterTune/OuterTune/issues)
           required: true
         - label: This issue contains only one bug.
           required: true

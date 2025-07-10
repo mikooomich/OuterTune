@@ -63,6 +63,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalContext
@@ -622,6 +623,34 @@ fun IconLabelButton(
 ) {
     Icon(
         imageVector = icon,
+        contentDescription = null,
+        tint = tint,
+        modifier = Modifier.padding(4.dp)
+    )
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        modifier = Modifier.padding(horizontal = 4.dp)
+    )
+}
+
+@Composable
+fun IconLabelButton(
+    text: String,
+    painter: Painter,
+    background: Color = MaterialTheme.colorScheme.secondaryContainer,
+    tint: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) = Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier
+        .background(background, RoundedCornerShape(MenuCornerRadius))
+        .padding(horizontal = 8.dp)
+        .clickable { onClick() }
+) {
+    Icon(
+        painter = painter,
         contentDescription = null,
         tint = tint,
         modifier = Modifier.padding(4.dp)

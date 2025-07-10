@@ -9,13 +9,14 @@
 
 package com.dd3boh.outertune.ui.screens.settings
 
+import android.content.ClipData
 import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -28,35 +29,52 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dd3boh.outertune.BuildConfig
 import com.dd3boh.outertune.R
+import com.dd3boh.outertune.constants.ENABLE_FFMETADATAEX
+import com.dd3boh.outertune.constants.ENABLE_UPDATE_CHECKER
+import com.dd3boh.outertune.constants.LYRIC_FETCH_TIMEOUT
+import com.dd3boh.outertune.constants.LastUpdateCheckKey
+import com.dd3boh.outertune.constants.LastVersionKey
+import com.dd3boh.outertune.constants.MAX_CONCURRENT_JOBS
+import com.dd3boh.outertune.constants.OOBE_VERSION
 import com.dd3boh.outertune.constants.TopBarInsets
 import com.dd3boh.outertune.ui.component.ColumnWithContentPadding
 import com.dd3boh.outertune.ui.component.IconButton
+import com.dd3boh.outertune.ui.component.IconLabelButton
+import com.dd3boh.outertune.ui.component.PreferenceEntry
+import com.dd3boh.outertune.ui.component.SettingsClickToReveal
 import com.dd3boh.outertune.ui.utils.backToMain
+import com.dd3boh.outertune.utils.rememberPreference
+import com.dd3boh.outertune.utils.scanners.FFMpegScanner
+import java.text.DateFormat.getDateTimeInstance
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,6 +82,8 @@ fun AboutScreen(
     navController: NavController,
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboard.current
     val uriHandler = LocalUriHandler.current
 
     val showDebugInfo = BuildConfig.DEBUG || BuildConfig.BUILD_TYPE == "userdebug"
@@ -109,7 +129,7 @@ fun AboutScreen(
                 Spacer(Modifier.width(4.dp))
 
                 Text(
-                    text =  BuildConfig.BUILD_TYPE.uppercase(),
+                    text = BuildConfig.BUILD_TYPE.uppercase(),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
@@ -129,129 +149,136 @@ fun AboutScreen(
         Spacer(Modifier.height(4.dp))
 
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(vertical = 16.dp)
         ) {
-            Text(
-                text = "By ",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.secondary
+            IconLabelButton(
+                text = "GitHub",
+                painter = painterResource(R.drawable.github),
+                onClick = { uriHandler.openUri("https://github.com/OuterTune/OuterTune") },
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
-            TextButton(
-                onClick = { uriHandler.openUri("https://github.com/DD3Boh") },
-                contentPadding = PaddingValues(0.dp)
-            ) {
-                Text(
-                    text = "Davide Garberi ",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-            Text(
-                text = "&",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.secondary
+
+            IconLabelButton(
+                text = stringResource(R.string.wiki),
+                icon = Icons.Outlined.Info,
+                onClick = { uriHandler.openUri("https://github.com/OuterTune/OuterTune/wiki") },
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
-            TextButton(
-                onClick = { uriHandler.openUri("https://github.com/mikooomich")},
-                contentPadding = PaddingValues( 0.dp)
-            ) {
-                Text(
-                    text = " Michael Zh.",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
         }
 
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(96.dp))
 
-        Row {
-            IconButton(
-                onClick = { uriHandler.openUri("https://github.com/OuterTune/OuterTune") }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.github),
-                    contentDescription = null
-                )
-            }
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        Row(
-            verticalAlignment = Alignment.Top,
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp)
         ) {
-            Text(
-                text = stringResource(R.string.special_thanks),
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
-            )
-        }
-
-        Text(
-            text = stringResource(R.string.attrib_zhuang),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.secondary
-        )
-
-        Spacer(Modifier.height(64.dp))
-/*
-        PreferenceEntry(
-            title = { Text(stringResource(R.string.attribution_title)) },
-            onClick = {
-                navController.navigate("settings/about/attribution")
-            }
-        )
-        PreferenceEntry(
-            title = { Text(stringResource(R.string.oss_licenses_title)) },
-            onClick = {
-                navController.navigate("settings/about/oss_licenses")
-            }
-        )
-*/
-        // debug info
-        if (showDebugInfo) {
-            Spacer(Modifier.height(400.dp))
-            Row(
-                verticalAlignment = Alignment.Top,
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "Device info (Debug)",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Red,
-                    modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                PreferenceEntry(
+                    title = { Text(stringResource(R.string.attribution_title)) },
+                    onClick = {
+                        navController.navigate("settings/about/attribution")
+                    }
                 )
             }
+            Spacer(modifier = Modifier.height(16.dp))
 
-            val info = listOf<String>(
-                "Device: ${Build.BRAND} ${Build.DEVICE} (${Build.MODEL})",
-                "Manufacturer: ${Build.MANUFACTURER}",
-                "HW: ${Build.BOARD} (${Build.HARDWARE})",
-                "ABIs: ${Build.SUPPORTED_ABIS.joinToString()})",
-                "Android: ${Build.VERSION.SDK_INT} (${Build.ID})",
-                Build.DISPLAY,
-                Build.PRODUCT,
-                Build.FINGERPRINT,
-                Build.VERSION.SECURITY_PATCH
-
-//                needs sdk 29 or 31
-//                Build.SKU ,
-//                Build.ODM_SKU ,
-//                Build.SOC_MODEL ,
-//                Build.SOC_MANUFACTURER ,
-            )
-
-            Column(
-                modifier = Modifier.padding(16.dp)
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                info.forEach {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Red,
+                PreferenceEntry(
+                    title = { Text(stringResource(R.string.help_bug_report_action)) },
+                    onClick = {
+                        uriHandler.openUri("https://github.com/OuterTune/OuterTune/issues")
+                    }
+                )
+                PreferenceEntry(
+                    title = { Text(stringResource(R.string.help_support_forum)) },
+                    onClick = {
+                        uriHandler.openUri("https://github.com/OuterTune/OuterTune/discussions")
+                    }
+                )
+                PreferenceEntry(
+                    title = { Text(stringResource(R.string.help_contact_email_inquiries)) },
+                    onClick = {
+                        val clipData = ClipData.newPlainText(
+                            context.getString(R.string.app_name),
+                            AnnotatedString("outertune@protonmail.com")
+                        )
+                        clipboardManager.nativeClipboard.setPrimaryClip(clipData)
+                    }
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ElevatedCard(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                SettingsClickToReveal(stringResource(R.string.app_info_title)) {
+                    val info = mutableListOf<String>(
+                        "Update checker: $ENABLE_UPDATE_CHECKER",
+                        "FFMetadataEx: $ENABLE_FFMETADATAEX",
+                        "LM scanner concurrency: $MAX_CONCURRENT_JOBS",
+                        "LYRIC_FETCH_TIMEOUT: $LYRIC_FETCH_TIMEOUT",
+                        "OOBE_VERSION: $OOBE_VERSION",
+                        "LYRIC_FETCH_TIMEOUT: $LYRIC_FETCH_TIMEOUT",
                     )
+                    if (ENABLE_UPDATE_CHECKER) {
+                        val lastVer by rememberPreference(LastVersionKey, defaultValue = "0.0.0")
+                        val lastUpdateCheck by rememberPreference(LastUpdateCheckKey, defaultValue = -1L)
+                        info.add("Last known version: $lastVer")
+                        info.add(
+                            "Last update check: ${getDateTimeInstance().format(Date(lastUpdateCheck))}"
+                        )
+                    }
+                    if (ENABLE_FFMETADATAEX) {
+                        info.add("FFMetadataEx version: ${FFMpegScanner.VERSION_STRING}")
+                    }
+
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        info.forEach {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                    }
+                }
+
+                SettingsClickToReveal(stringResource(R.string.device_info_title)) {
+                    ElevatedCard(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        val info = mutableListOf<String>(
+                            "Device: ${Build.BRAND} ${Build.DEVICE} (${Build.MODEL})",
+                            "Manufacturer: ${Build.MANUFACTURER}",
+                            "HW: ${Build.BOARD} (${Build.HARDWARE})",
+                            "ABIs: ${Build.SUPPORTED_ABIS.joinToString()})",
+                            "Android: ${Build.VERSION.SDK_INT} (${Build.ID})",
+                            Build.DISPLAY,
+                            Build.PRODUCT,
+                            Build.FINGERPRINT,
+                            Build.VERSION.SECURITY_PATCH
+                        )
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            info.add("SOC: ${Build.SOC_MODEL} (${Build.SOC_MANUFACTURER})")
+                            info.add("SKU: ${Build.SKU} (${Build.ODM_SKU})")
+                        }
+
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            info.forEach {
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

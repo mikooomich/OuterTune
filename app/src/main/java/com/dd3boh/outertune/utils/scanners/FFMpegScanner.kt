@@ -22,6 +22,7 @@ import com.dd3boh.outertune.models.SongTempData
 import com.dd3boh.outertune.ui.utils.ARTIST_SEPARATORS
 import com.dd3boh.outertune.ui.utils.EXTRACTOR_TAG
 import wah.mikooomich.ffMetadataEx.AudioMetadata
+import wah.mikooomich.ffMetadataEx.FFMetadataEx
 import wah.mikooomich.ffMetadataEx.FFMpegWrapper
 import java.io.File
 import java.lang.Integer.parseInt
@@ -240,5 +241,9 @@ class FFMpegScanner() : MetadataScanner {
                 )
             )
         }
+    }
+
+    companion object {
+        const val VERSION_STRING = "${FFMetadataEx.VERSION_NAME} (${FFMetadataEx.VERSION_CODE})"
     }
 }
