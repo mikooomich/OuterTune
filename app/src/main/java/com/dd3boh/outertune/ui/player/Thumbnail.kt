@@ -13,7 +13,6 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,29 +20,18 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.OndemandVideo
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import coil3.compose.AsyncImage
@@ -63,7 +51,6 @@ fun Thumbnail(
     sliderPositionProvider: () -> Long?,
     modifier: Modifier = Modifier,
     showLyricsOnClick: Boolean = false,
-    contentScale: ContentScale = ContentScale.Fit,
     customMediaMetadata: MediaMetadata? = null
 ) {
     val haptic = LocalHapticFeedback.current
@@ -93,7 +80,6 @@ fun Thumbnail(
                 .fillMaxSize()
                 .statusBarsPadding()
         ) {
-            var isRectangularImage by remember { mutableStateOf(false) }
 
             Column(
                 verticalArrangement = Arrangement.Center,
@@ -111,7 +97,6 @@ fun Thumbnail(
 //                        mediaMetadata.let { // required to re render when song changes
                             AsyncImageLocal(
                                 image = { imageCache.getLocalThumbnail(mediaMetadata.localPath, false) },
-                                contentScale = contentScale,
                                 placeholderIcon = null,
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(ThumbnailCornerRadius * 2))
@@ -127,41 +112,11 @@ fun Thumbnail(
                         AsyncImage(
                             model = mediaMetadata?.thumbnailUrl,
                             contentDescription = null,
-                            contentScale = contentScale,
-                            onSuccess = { success ->
-                                val width = success.result.image.width
-                                val height = success.result.image.height
-
-                                isRectangularImage = width.toFloat() / height != 1f
-                            },
                             modifier = Modifier
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(ThumbnailCornerRadius * 2))
                                 .clickable(enabled = showLyricsOnClick) { showLyrics = !showLyrics }
                         )
-                    }
-
-                    if (isRectangularImage) {
-                        val radial = Brush.radialGradient(
-                            0.0f to Color.Black.copy(alpha = 0.5f),
-                            0.8f to Color.Black.copy(alpha = 0.05f),
-                            1.0f to Color.Transparent,
-                        )
-
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .size(maxHeight / 8)
-                                .offset(x = -maxHeight / 75)
-                                .background(brush = radial, shape = CircleShape)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.OndemandVideo,
-                                contentDescription = null,
-                                tint = Color.White
-                            )
-                        }
                     }
                 }
             }

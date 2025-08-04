@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -45,7 +44,6 @@ import androidx.compose.material.icons.rounded.FolderCopy
 import androidx.compose.material.icons.rounded.LibraryAddCheck
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.OfflinePin
-import androidx.compose.material.icons.rounded.OndemandVideo
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -54,20 +52,15 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -659,14 +652,12 @@ fun ItemThumbnail(
         contentAlignment = Alignment.Center,
         modifier = modifier
     ) {
-        var isRectangularImage by remember { mutableStateOf(false) }
 
         if (thumbnailUrl == null || thumbnailUrl.startsWith("/storage")) {
             // local thumbnail arts
             _root_ide_package_.com.dd3boh.outertune.ui.component.AsyncImageLocal(
                 image = { thumbnailUrl?.let { imageCache.getLocalThumbnail(thumbnailUrl, true) } },
                 placeholderIcon = placeholderIcon,
-                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(shape)
@@ -676,13 +667,6 @@ fun ItemThumbnail(
             AsyncImage(
                 model = thumbnailUrl,
                 contentDescription = null,
-                contentScale = ContentScale.Crop,
-                onSuccess = { success ->
-                    val width = success.result.image.width
-                    val height = success.result.image.height
-
-                    isRectangularImage = width.toFloat() / height != 1f
-                },
                 modifier = Modifier
                     .fillMaxSize()
                     .clip(shape)
@@ -723,30 +707,6 @@ fun ItemThumbnail(
                         )
                     }
                 }
-            }
-        }
-
-        if (isRectangularImage) {
-            val radial = Brush.radialGradient(
-                0.0f to Color.Black.copy(alpha = 0.5f),
-                0.8f to Color.Black.copy(alpha = 0.05f),
-                1.0f to Color.Transparent,
-            )
-
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .size((maxHeight / 3) + 6.dp)
-                    .offset(x = -maxHeight / 25)
-                    .background(brush = radial, shape = CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.OndemandVideo,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.padding(3.dp)
-                )
             }
         }
 

@@ -20,14 +20,11 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.OndemandVideo
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Replay
@@ -41,13 +38,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -161,7 +155,6 @@ fun MiniMediaInfo(
                 .padding(6.dp)
                 .size(48.dp)
         ) {
-            var isRectangularImage by remember { mutableStateOf(false) }
 
             if (mediaMetadata.isLocal) {
                 // local thumbnail arts
@@ -176,41 +169,10 @@ fun MiniMediaInfo(
                 AsyncImage(
                     model = mediaMetadata.thumbnailUrl,
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    onSuccess = { success ->
-                        val width = success.result.image.width
-                        val height = success.result.image.height
-
-                        isRectangularImage = width.toFloat() / height != 1f
-                    },
                     modifier = Modifier
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(ThumbnailCornerRadius))
                 )
-            }
-
-            if (isRectangularImage) {
-                val radial = Brush.radialGradient(
-                    0.0f to Color.Black.copy(alpha = 0.5f),
-                    0.8f to Color.Black.copy(alpha = 0.05f),
-                    1.0f to Color.Transparent,
-                )
-
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .size((maxHeight / 3) + 6.dp)
-                        .offset(x = -maxHeight / 25)
-                        .background(brush = radial, shape = CircleShape)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.OndemandVideo,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.padding(3.dp)
-                    )
-                }
             }
 
             androidx.compose.animation.AnimatedVisibility(
