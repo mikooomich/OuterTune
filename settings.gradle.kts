@@ -28,12 +28,11 @@ include(":ffMetadataEx")
 // To:
 //      implementation("com.github.teamnewpipe:NewPipeExtractor")
 
-includeBuild("../TubularExtractor") {
-    dependencySubstitution {
-        substitute(module("com.github.teamnewpipe:NewPipeExtractor")).using(project(":extractor"))
-    }
-}
-
+//includeBuild("../NewPipeExtractor") {
+//    dependencySubstitution {
+//        substitute(module("com.github.teamnewpipe:NewPipeExtractor")).using(project(":extractor"))
+//    }
+//}
 
 
 // Use a local copy of taglib by uncommenting the lines below.
