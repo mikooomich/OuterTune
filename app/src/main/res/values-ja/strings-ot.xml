@@ -88,8 +88,8 @@
     <string name="tab_arrangement_home_required">ホームタブは必須です。</string>
     <string name="token_shown">再度タップすると、コピーまたは編集</string>
     <string name="audio_offload">オフロードを有効にする</string>
-    <string name="audio_offload_description">音声の再生にオフロードの音声パスを使用します。無効にすると電力消費が増加する可能性がありますが、音声の再生や後処理で問題が発生する場合に役立ちます</string>
-    <string name="keep_alive_description">OuterTuneがバックグラウンドで終了されないよう、永続的なフォアグラウンドサービスを使用します。</string>
+    <string name="audio_offload_description">音声の再生にオフロードの音声パスを使用します。有効にすると電力消費が減る可能性がありますが、音声の再生や後処理で問題が発生することがあります。この設定は、未対応のコーデックや機器には影響しません</string>
+    <string name="keep_alive_description">OuterTuneがバックグラウンドで終了されないよう、永続的なフォアグラウンドサービスを使用します</string>
     <string name="min_playback_duration">最小の再生時間</string>
     <string name="min_playback_duration_description">曲を「再生済み」と判断するために再生すべき最小量</string>
     <string name="scanner_progress_syncing">同期中…</string>
@@ -124,7 +124,7 @@
     <string name="player_background_style">プレーヤーの背景スタイル</string>
     <string name="oobe_use_backup">バックアップがある</string>
     <string name="token_adv_login_description">これは高度なログイン方法です。ウェブポータルの代わりに、ここでログイントークンを直接入力または更新することもできます。たとえば、これにより複数の端末でのログインが高速化されます</string>
-    <string name="scanner_type_ffmpeg_ext">FFmpeg メタデータ抽出ツールを使用します。外部パッケージのインストールが必要</string>
+    <string name="scanner_type_ffmpeg_ext">FFmpeg メタデータ抽出ツールを使用します。完全版のみをご利用ください。コア版では曲の操作に問題を起こすことがあります</string>
     <string name="scanner_variant_rescan">ライブラリ全体を再スキャンし、すべての曲のメタデータを再読み込み</string>
     <string name="new_interface">新しいレイアウト</string>
     <string name="experimental_settings_title">実験的な設定</string>
@@ -243,4 +243,15 @@
     </plurals>
     <string name="seek_increment">シーク増加</string>
     <string name="ffmpeg_lgpl">本アプリはLGPLバージョン2.1でFFmpegのライブラリを使用</string>
+    <string name="toggle_lyrics">歌詞を切替替</string>
+    <string name="audio_decoder_ffmpeg_only">FFmpegデコーダーを優先</string>
+    <string name="audio_decoder_preference">音声デコーダー</string>
+    <string name="audio_decoder_system_only">システムのデコーダーのみ</string>
+    <string name="audio_decoder_system_with_ffmpeg">システムのデコーダーを優先</string>
+    <string name="action_logout_tooltip">完全にログアウトするには、このログアウトボタンを使う前に、ウェブポータルでYouTubeアカウントからサインアウトしてください</string>
+    <string name="max_queues_title">キューの最大数</string>
+    <string name="oobe_cache_title">曲のキャッシュ</string>
+    <string name="oobe_welcome_tip">快適に使用するには、テーマ、YouTubeアカウント、端末内メディア、ダウンロードなど自分向けにするための主な設定を簡単に設定することをお勧めします。</string>
+    <string name="oobe_cache_subtitle">曲のキャッシュのサイズを選択。ネット接続やYouTube APIの再生に関する問題を軽減します</string>
+    <string name="library_filter">ライブラリを絞り込み</string>
 </resources>

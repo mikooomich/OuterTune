@@ -62,7 +62,7 @@ interface ArtistsDao {
         FROM artist
             LEFT JOIN song_artist_map sam ON artist.id = sam.artistId
             LEFT JOIN song ON sam.songId = song.id
-        WHERE artist.name LIKE '%' || :query || '%' AND song.inLibrary IS NOT NULL
+        WHERE artist.name LIKE '%' || :query || '%' AND (song.inLibrary IS NOT NULL OR song.dateDownload IS NOT NULL)
         GROUP BY artist.id
         HAVING songCount > 0
         ORDER BY artist.bookmarkedAt ASC

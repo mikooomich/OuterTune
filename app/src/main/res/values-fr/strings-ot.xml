@@ -81,7 +81,7 @@
     <string name="persistent_queue_desc_ot">Restaurer les précédentes files d\'attente ouvertes au démarrage de l\'application</string>
     <string name="lyrics_multiline_title">Lire les paroles sur plusieurs lignes</string>
     <string name="m3u_import_playlist">Importer une playlist (m3u)</string>
-    <string name="keep_alive_description">Utilisez un service de premier plan persistant pour empêcher la fermeture d’OuterTune en arrière-plan.</string>
+    <string name="keep_alive_description">Utilisez un service de premier plan persistant pour empêcher la fermeture d\'OuterTune en arrière-plan</string>
     <string name="lyrics_multiline_description">Traitez toutes les lignes entre les points de synchronisation comme un seul texte lyrique</string>
     <string name="lyrics_trim_title">Supprimer les espaces autour des paroles</string>
     <string name="local_library_enable_description">La désactivation masquera la bibliothèque locale de l\'application</string>
@@ -255,4 +255,9 @@
     <string name="audio_decoder_preference">Décodeur audio</string>
     <string name="audio_decoder_system_only">Décodeurs système uniquement</string>
     <string name="audio_decoder_system_with_ffmpeg">Donner la priorité aux décodeurs système</string>
+    <string name="max_queues_title">Nombre maximal de files d\'attente</string>
+    <string name="oobe_welcome_tip">Pour une expérience optimale, nous vous recommandons d\'effectuer une configuration rapide pour personnaliser les paramètres clés tels que le thème, le compte YouTube, les médias locaux et les téléchargements.</string>
+    <string name="oobe_cache_title">Cache de chansons</string>
+    <string name="oobe_cache_subtitle">Choisissez la taille du cache des chansons. Cela peut contribuer à réduire les problèmes de lecture sur Internet ou via l\'API YouTube.</string>
+    <string name="action_logout_tooltip">Pour vous déconnecter complètement, veuillez vous déconnecter de votre compte YouTube dans le portail Web avant d\'utiliser ce bouton de déconnexion.</string>
 </resources>

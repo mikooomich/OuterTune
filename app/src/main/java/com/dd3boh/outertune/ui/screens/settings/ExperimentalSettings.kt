@@ -346,6 +346,37 @@ fun ExperimentalSettings(
                     text = "surfaceContainerLowest"
                 )
                 Spacer(Modifier.height(60.dp))
+                ColorBox(
+                    sampleColor = MaterialTheme.colorScheme.onPrimaryFixed,
+                    backgroundColor = MaterialTheme.colorScheme.primaryFixed,
+                    text = "primaryFixed"
+                )
+                ColorBox(
+                    sampleColor = MaterialTheme.colorScheme.onPrimaryFixedVariant,
+                    backgroundColor = MaterialTheme.colorScheme.primaryFixedDim,
+                    text = "primaryFixedDim / onPrimaryFixedVariant"
+                )
+                ColorBox(
+                    sampleColor = MaterialTheme.colorScheme.onSecondaryFixed,
+                    backgroundColor = MaterialTheme.colorScheme.secondaryFixed,
+                    text = "secondaryFixed"
+                )
+                ColorBox(
+                    sampleColor = MaterialTheme.colorScheme.onSecondaryFixedVariant,
+                    backgroundColor = MaterialTheme.colorScheme.secondaryFixedDim,
+                    text = "secondaryFixedDim / onSecondaryFixedVariant"
+                )
+                ColorBox(
+                    sampleColor = MaterialTheme.colorScheme.onTertiaryFixed,
+                    backgroundColor = MaterialTheme.colorScheme.tertiaryFixed,
+                    text = "tertiaryFixed"
+                )
+                ColorBox(
+                    sampleColor = MaterialTheme.colorScheme.onTertiaryFixedVariant,
+                    backgroundColor = MaterialTheme.colorScheme.tertiaryFixedDim,
+                    text = "tertiaryFixedDim / onTertiaryFixedVariant"
+                )
+                Spacer(Modifier.height(60.dp))
 
                 ColorBox(
                     sampleColor = MaterialTheme.colorScheme.onErrorContainer,

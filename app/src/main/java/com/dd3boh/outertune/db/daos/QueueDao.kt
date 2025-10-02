@@ -18,7 +18,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.withLock
 
 @Dao
@@ -37,7 +36,7 @@ interface QueueDao {
         val queues = getAllQueues().first()
 
         queues.forEach { queue ->
-            val shuffledSongs = runBlocking { getQueueSongs(queue.id).first() }
+            val shuffledSongs = getQueueSongs(queue.id).first()
             if (shuffledSongs.isEmpty()) return@forEach
             resultQueues.add(
                 MultiQueueObject(
@@ -90,8 +89,10 @@ interface QueueDao {
 
     @Transaction
     fun updateAllQueues(mqs: List<MultiQueueObject>) {
+        mqs.forEachIndexed { index, q -> q.index = index }
         CoroutineScope(Dispatchers.IO).launch {
             QueueBoard.mutex.withLock { // possible ConcurrentModificationException
+                nukeAliens(mqs.map { it.id })
                 mqs.forEach { updateQueue(it) }
             }
         }
@@ -111,5 +112,8 @@ interface QueueDao {
 
     @Query("DELETE FROM queue WHERE id = :id")
     fun deleteQueue(id: Long)
+
+    @Query("DELETE FROM queue WHERE id NOT IN (:ids)")
+    fun nukeAliens(ids: List<Long>)
     // endregion
 }

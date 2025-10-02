@@ -298,7 +298,7 @@ interface DatabaseDao : SongsDao, AlbumsDao, ArtistsDao, PlaylistsDao, QueueDao 
 
 
     /**
-     * Queueboard
+     * WARNING: This removes all queue song data and re-adds the queue. Did you mean to use updateQueue()?
      */
     @Transaction
     fun saveQueue(mq: MultiQueueObject) {
@@ -334,38 +334,6 @@ interface DatabaseDao : SongsDao, AlbumsDao, ArtistsDao, PlaylistsDao, QueueDao 
                 )
             )
             i ++
-        }
-    }
-
-    /**
-     * WARNING: This removes all queue data and re-adds the queue. Did you mean to use updateQueue()?
-     */
-    @Transaction
-    fun rewriteQueue(mq: MultiQueueObject) {
-        delete(
-            QueueEntity(
-                id = mq.id,
-                title = mq.title,
-                shuffled = mq.shuffled,
-                queuePos = mq.queuePos,
-                lastSongPos = mq.lastSongPos,
-                index = mq.index,
-                playlistId = mq.playlistId
-            )
-        )
-
-        saveQueue(mq)
-    }
-
-    /**
-     * WARNING: This removes ALL queues and their data, and re-adds them. Did you mean to use rewriteQueue()?
-     */
-    @Transaction
-    fun rewriteAllQueues(queues: List<MultiQueueObject>) {
-        deleteAllQueues()
-
-        queues.forEach { mq ->
-            saveQueue(mq)
         }
     }
 

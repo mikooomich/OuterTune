@@ -1,9 +1,7 @@
 package org.akanework.gramophone.logic.utils
 
-import android.util.Log
 import android.util.Xml
-import androidx.annotation.OptIn
-import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Log
 import androidx.media3.extractor.text.CuesWithTiming
 import androidx.media3.extractor.text.SubtitleParser
 import androidx.media3.extractor.text.subrip.SubripParser
@@ -112,26 +110,18 @@ private sealed class SyntacticLrc {
                     pendingBgNewLine = true
                 }
                 if (pos < text.length && pos + 1 < text.length && text.regionMatches(
-                        pos,
-                        "\r\n",
-                        0,
-                        2
-                    )
-                ) {
+                        pos, "\r\n", 0, 2)) {
                     out.add(NewLine())
                     pos += 2
-                    pendingBgNewLine = false
                     continue
                 }
                 if (pos < text.length && (text[pos] == '\n' || text[pos] == '\r')) {
                     out.add(NewLine())
                     pos++
-                    pendingBgNewLine = false
                     continue
                 }
                 if (pendingBgNewLine) {
                     out.add(NewLine.SyntheticNewLine())
-                    pendingBgNewLine = false
                     continue
                 }
                 val tmMatch = timeMarksRegex.matchAt(text, pos)
@@ -141,10 +131,13 @@ private sealed class SyntacticLrc {
                     // but hey, we tried. Can't do much about it.
                     // If you want to write something that looks like a timestamp into your lyrics,
                     // you'll probably have to delete the following three lines.
-                    if (!(out.lastOrNull() is NewLine? || out.lastOrNull() is SyncPoint))
+                    pos += tmMatch.value.length
+                    if (!(pos < text.length && ((pos + 1 < text.length && text.regionMatches(
+                            pos, "\r\n", 0, 2)) ||
+                                (text[pos] == '\n' || text[pos] == '\r'))) &&
+                        !(out.lastOrNull() is NewLine? || out.lastOrNull() is SyncPoint))
                         out.add(NewLine.SyntheticNewLine())
                     out.add(SyncPoint(parseTime(tmMatch)))
-                    pos += tmMatch.value.length
                     continue
                 }
                 // Skip spaces in between of compressed lyric sync points. They really are
@@ -298,14 +291,12 @@ private sealed class SyntacticLrc {
                     } == null)
                 // Recover only text information to make the most out of this damaged file.
                     it.flatMap {
-                        if (it is InvalidText)
-                            listOf(it)
-                        else if (it is SpeakerTag)
-                            listOf(it)
-                        else if (it is LyricText)
-                            listOf(InvalidText(it.text))
-                        else
-                            listOf()
+                        when (it) {
+                            is InvalidText -> listOf(it)
+                            is SpeakerTag -> listOf(it)
+                            is LyricText -> listOf(InvalidText(it.text))
+                            else -> listOf()
+                        }
                     }
                 else it
             }.let {
@@ -529,9 +520,9 @@ fun parseLrc(lyricText: String, trimEnabled: Boolean, multiLineEnabled: Boolean)
     var speaker: SpeakerEntity? = null
     var hadLyricSinceWordSync = true
     var hadWordSyncSinceNewLine = false
-    var currentLine = mutableListOf<Pair<ULong, String?>>()
+    val currentLine = mutableListOf<Pair<ULong, String?>>()
     var syncPointStreak = 0
-    var compressed = mutableListOf<ULong>()
+    val compressed = mutableListOf<ULong>()
     for (element in lyricSyntax) {
         if (element is SyntacticLrc.SyncPoint)
             syncPointStreak++
@@ -575,7 +566,7 @@ fun parseLrc(lyricText: String, trimEnabled: Boolean, multiLineEnabled: Boolean)
             }
 
             element is SyntacticLrc.NewLine -> {
-                var words = if (currentLine.size > 1 || hadWordSyncSinceNewLine) {
+                val words = if (currentLine.size > 1 || hadWordSyncSinceNewLine) {
                     val wout = mutableListOf<Word>()
                     var idx = 0
                     for (i in currentLine.indices) {
@@ -680,20 +671,19 @@ fun parseLrc(lyricText: String, trimEnabled: Boolean, multiLineEnabled: Boolean)
         }
     }
     out.sortBy { it.start }
-    var previousLyric: LyricLine? = null
+    var previousTimestamp = ULong.MAX_VALUE
     val defaultIsWalaokeM = out.find { it.speaker?.isWalaoke == true } != null &&
             out.find { it.speaker?.isWalaoke == false } == null
     out.forEachIndexed { i, lyric ->
         if (defaultIsWalaokeM && lyric.speaker == null)
             lyric.speaker = SpeakerEntity.Male
         lyric.end = lyric.words?.lastOrNull()?.timeRange?.last
-            ?: (if (lyric.start == previousLyric?.start) out.find { it.start == lyric.start }
+            ?: (if (lyric.start == previousTimestamp) out.find { it.start == lyric.start }
                 ?.words?.lastOrNull()?.timeRange?.last else null)
                     ?: out.find { it.start > lyric.start }?.start?.minus(1uL)
                     ?: Long.MAX_VALUE.toULong()
-        lyric.isTranslated = lyric.start == previousLyric?.start
-                && (previousLyric.text.isNotBlank() || previousLyric.text.isBlank() && lyric.text.isBlank())
-        previousLyric = lyric
+        lyric.isTranslated = lyric.start == previousTimestamp
+        previousTimestamp = lyric.start
     }
     while (out.firstOrNull()?.text?.isBlank() == true)
         out.removeAt(0)
@@ -742,8 +732,8 @@ private class TtmlTimeTracker(private val parser: XmlPullParser, private val isA
         tickRate = parser.getAttributeValue(ttp, "tickRate")?.toInt() ?: 1
     }
     // of course someone didn't conform to spec again :D - business as usual
-    private val appleTimeRegex = Regex("^(?:([0-9]+):)?(?:([0-9]+):)?([0-9]+\\.[0-9]+)?$")
-    private val clockTimeRegex = Regex("^([0-9][0-9]+):([0-9][0-9]):([0-9][0-9])(?:(\\.[0-9]+)|:([0-9][0-9])(?:\\.([0-9]+))?)?$")
+    private val appleTimeRegex = Regex("^(?:([0-9]+):)?(?:([0-9]+):)?([0-9]+(?:\\.[0-9]+)?)?$")
+    private val clockTimeRegex = Regex("^([0-9]{2,}):([0-9]{2}):([0-9]{2})(?:(\\.[0-9]+)|:([0-9]{2})(?:\\.([0-9]+))?)?$")
     private val offsetTimeRegex = Regex("^([0-9]+(?:\\.[0-9]+)?)(h|m|s|ms|f|t)$")
     var audioOffset: Long? = null
     fun parseTimestampMs(input: String?, offset: Long, negative: Boolean): Long? {
@@ -775,25 +765,25 @@ private class TtmlTimeTracker(private val parser: XmlPullParser, private val isA
                 return ((hours * 3600000 + minutes * 60000 + (seconds + frameSecs +
                         subFrameSecs) * 1000).toLong() + offset + (audioOffset ?: 0L)) * multiplier
             }
-            val offsetMatch = offsetTimeRegex.matchEntire(input)
-            if (offsetMatch != null) {
-                var time = offsetMatch.groupValues[1].toDouble()
-                when (offsetMatch.groupValues[2]) {
-                    "h" -> time *= 3600000.0
-                    "m" -> time *= 60000.0
-                    "s" -> time *= 1000.0
-                    "ms" -> {}
-                    "f" -> time /= effectiveFrameRate / 1000.0
-                    "t" -> time /= tickRate / 1000.0
-                }
-                return (time.toLong() + offset + (audioOffset ?: 0L)) * multiplier
+        }
+        val offsetMatch = offsetTimeRegex.matchEntire(input)
+        if (offsetMatch != null) {
+            var time = offsetMatch.groupValues[1].toDouble()
+            when (offsetMatch.groupValues[2]) {
+                "h" -> time *= 3600000.0
+                "m" -> time *= 60000.0
+                "s" -> time *= 1000.0
+                "ms" -> {}
+                "f" -> time /= effectiveFrameRate / 1000.0
+                "t" -> time /= tickRate / 1000.0
             }
+            return (time.toLong() + offset + (audioOffset ?: 0L)) * multiplier
         }
         throw XmlPullParserException("can't understand this TTML timestamp: $input")
     }
     private fun parseRange(offset: ULong): ULongRange? {
         var begin = parseTimestampMs(parser.getAttributeValue("", "begin"), offset.toLong(), false)?.toULong()
-        var dur = parseTimestampMs(parser.getAttributeValue("", "dur"), 0L, false)?.toULong()
+        val dur = parseTimestampMs(parser.getAttributeValue("", "dur"), 0L, false)?.toULong()
         var end = parseTimestampMs(parser.getAttributeValue("", "end"), offset.toLong(), false)?.toULong()
         if (begin == null && end == null || end == null && dur == null
             || begin == null && dur == null)
@@ -903,11 +893,12 @@ private class TtmlParserState(private val parser: XmlPullParser, private val tim
     }
 }
 
-@OptIn(UnstableApi::class)
 fun parseTtml(lyricText: String): SemanticLyrics? {
+    val formattedLyricText = lyricText
+        .replace(Regex("&(?!#?[a-zA-Z0-9]+;)"), "&amp;")
     val parser = Xml.newPullParser()
     parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true)
-    parser.setInput(StringReader(lyricText))
+    parser.setInput(StringReader(formattedLyricText))
     try {
         parser.nextTag()
         parser.require(XmlPullParser.START_TAG, tt, "tt")
@@ -1049,7 +1040,6 @@ fun parseTtml(lyricText: String): SemanticLyrics? {
     }).also { splitBidirectionalWords(it) }
 }
 
-@OptIn(UnstableApi::class)
 fun parseSrt(lyricText: String, trimEnabled: Boolean): SemanticLyrics? {
     if (!lyricText.startsWith("1\n") && !lyricText.startsWith("1\r")) return null // invalid SubRip
     val cues = mutableListOf<CuesWithTiming>()
@@ -1060,7 +1050,7 @@ fun parseSrt(lyricText: String, trimEnabled: Boolean): SemanticLyrics? {
             SubtitleParser.OutputOptions.allCues()
         ) { cues.add(it) }
     } catch (e: Exception) {
-        Log.w(TAG, "Failed to parse something which looks like SRT: ${Log.getStackTraceString(e)}")
+        Log.w(TAG, "Failed to parse something which looks like SRT: ${Log.getThrowableString(e)}")
         return null
     }
     var lastTs: ULong? = null
@@ -1074,15 +1064,4 @@ fun parseSrt(lyricText: String, trimEnabled: Boolean): SemanticLyrics? {
             else it
         }, ts, (it.endTimeUs / 1000).toULong(), null, null, l)
     })
-}
-
-fun SemanticLyrics?.convertForLegacy(): MutableList<MediaStoreUtils.Lyric>? {
-    if (this == null) return null
-    if (this is SyncedLyrics) {
-        return this.text.map {
-            MediaStoreUtils.Lyric(it.start.toLong(), it.text, it.isTranslated)
-        }.toMutableList()
-    }
-    return mutableListOf(MediaStoreUtils.Lyric(null,
-        this.unsyncedText.joinToString("\n") { it.first }, false))
 }

@@ -105,7 +105,6 @@ import kotlinx.coroutines.runBlocking
 import org.akanework.gramophone.logic.utils.LrcUtils
 import org.akanework.gramophone.logic.utils.SemanticLyrics
 import org.akanework.gramophone.logic.utils.SemanticLyrics.LyricLine
-import org.akanework.gramophone.logic.utils.convertForLegacy
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
 
@@ -160,9 +159,12 @@ fun Lyrics(
                     lyricRefreshRate = Speed.SLOW.toLrcRefreshMillis()
                 }
             } else {
-                model.convertForLegacy()?.first()?.content?.let {
-                    lines.add(LyricLine(it, 0L.toULong(), 0L.toULong(), null, null, false))
-                }
+                lines.add(
+                    LyricLine(
+                        model.unsyncedText.joinToString { "${it.first}\n" }, 0L.toULong(), 0L.toULong(),
+                        null, null, false
+                    )
+                )
                 lyricRefreshRate = Speed.SLOW.toLrcRefreshMillis()
             }
         }

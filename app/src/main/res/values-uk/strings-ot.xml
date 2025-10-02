@@ -87,7 +87,7 @@
     <string name="token_adv_login_description">Це РОЗШИРЕНИЙ метод входу. Як альтернатива вебпорталу, ви можете безпосередньо ввести або оновити свій токен для входу тут. Наприклад, це може прискорити вхід на декількох пристроях. Зверніть увагу, що будь-які недійсні формати токенів, які застосунок не зможе розпізнати, не будуть прийняті</string>
     <string name="grp_audio">Звук</string>
     <string name="lyrics_prefer_local">Надавати перевагу локальним файлам текстів пісень</string>
-    <string name="keep_alive_description">Використовуйте постійну службу переднього плану, щоб запобігти закриттю OuterTune у фоновому режимі.</string>
+    <string name="keep_alive_description">Використовуйте постійну службу переднього плану, щоб запобігти закриттю OuterTune у фоновому режимі</string>
     <string name="auto_scanner_title">Автоматично сканувати</string>
     <string name="grp_proxy">Проксі</string>
     <string name="lyrics_prefer_local_description">Надавати пріоритет локальним файлам текстів пісень перед використанням усіх хмарних провайдерів. Вимкніть це, щоби визначити пріоритетність хмарних провайдерів</string>
@@ -224,7 +224,7 @@
     <string name="app_info_title">Інформація про заявку</string>
     <string name="device_info_title">Інформація про пристрій</string>
     <string name="help_bug_report_action">Надіслати звіт про помилку (через GitHub)</string>
-    <string name="help_contact_email_inquiries">Інші запити (Натисніть, щоб скопіювати електронну пошту)</string>
+    <string name="help_contact_email_inquiries">Інші запити (Натисніть, щоб скопіювати електронний лист)</string>
     <string name="help_support_forum">Довідка та підтримка (через GitHub)</string>
     <string name="wiki">Вікі</string>
     <string name="err_invalid_ytm_song">Не вдалося відтворити пісню. Можна відтворити лише контент, доступний у YouTube Music</string>
@@ -258,4 +258,9 @@
     <string name="audio_decoder_preference">Аудіодекодер</string>
     <string name="audio_decoder_system_only">Тільки системні декодери</string>
     <string name="audio_decoder_system_with_ffmpeg">Пріоритет системних декодерів</string>
+    <string name="max_queues_title">Максимальна кількість черг</string>
+    <string name="oobe_welcome_tip">Для найкращого досвіду рекомендуємо виконати швидке налаштування, щоб персоналізувати ключові параметри, такі як тема, обліковий запис YouTube, локальні медіа та завантаження.</string>
+    <string name="oobe_cache_title">Кеш пісень</string>
+    <string name="oobe_cache_subtitle">Виберіть розмір кешу пісні. Це може допомогти зменшити проблеми з відтворенням через Інтернет або YouTube API</string>
+    <string name="action_logout_tooltip">Щоб повністю вийти, вийдіть зі свого облікового запису YouTube на веб-порталі, перш ніж використовувати цю кнопку виходу</string>
 </resources>

@@ -501,7 +501,7 @@ fun BoxScope.QueueContent(
         ) {
             itemsIndexed(
                 items = mutableQueues,
-                key = { _, item -> item.hashCode() }
+                key = { _, item -> item.id }
             ) { index, mq ->
                 ReorderableItem(
                     state = reorderableStateEx,

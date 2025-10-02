@@ -44,10 +44,10 @@ class DownloadManagerOt(
             val request = Request.Builder().url(url).build()
             try {
                 httpClient.newCall(request).execute().use { resp ->
-                    if (!resp.isSuccessful || resp.body == null) {
+                    if (!resp.isSuccessful) {
                         throw IllegalStateException("HTTP ${resp.code}")
                     }
-                    val body = resp.body!!
+                    val body = resp.body
                     val total = body.contentLength()
                     var downloaded = 0L
 

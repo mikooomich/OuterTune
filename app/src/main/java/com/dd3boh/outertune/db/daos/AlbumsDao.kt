@@ -51,7 +51,7 @@ interface AlbumsDao : ArtistsDao {
         SELECT album.*, count(song.dateDownload) downloadCount
         FROM album
             LEFT JOIN song ON song.albumId = album.id
-        WHERE album.title LIKE '%' || :query || '%' AND song.inLibrary IS NOT NULL
+        WHERE album.title LIKE '%' || :query || '%' AND (song.inLibrary IS NOT NULL OR song.dateDownload IS NOT NULL)
         GROUP BY album.id
         LIMIT :previewSize
     """)

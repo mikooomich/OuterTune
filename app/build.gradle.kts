@@ -70,6 +70,8 @@ android {
             initWith(getByName("release"))
             isMinifyEnabled = false
             isShrinkResources = false
+//            isDebuggable = true
+            isProfileable = true
             matchingFallbacks += listOf("release")
         }
     }
@@ -202,7 +204,6 @@ dependencies {
     implementation(libs.concurrent.futures)
 
     implementation(libs.activity)
-    implementation(libs.navigation)
     implementation(libs.hilt.navigation)
     implementation(libs.datastore)
 

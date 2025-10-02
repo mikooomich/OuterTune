@@ -237,7 +237,7 @@
     <plurals name="scanner_n_song_found">
         <item quantity="one">שיר נמצא</item>
         <item quantity="two">%d שירים נמצאו</item>
-        <item quantity="other"></item>
+        <item quantity="other"/>
     </plurals>
     <string name="scanner_variant_rescan">סרוק מחדש את כל הספרייה וטען שוב את כל פרטי השירים</string>
     <string name="dl_size_used_extra">ייבוא נוסף: %s בשימוש</string>

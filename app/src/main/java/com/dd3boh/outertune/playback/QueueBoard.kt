@@ -60,9 +60,7 @@ class QueueBoard(
             maxQueues = 1
         }
         if (!queues.isEmpty()) {
-            masterQueues.addAll(
-                queues.subList((queues.lastIndex - maxQueues).coerceIn(0, queues.lastIndex), queues.lastIndex)
-            )
+            masterQueues.addAll(queues.subList(0, min(queues.size, maxQueues)))
         }
     }
 
@@ -849,7 +847,7 @@ class QueueBoard(
             }
             Log.d(TAG, "Running database save task")
 
-            // saving songs nukes the queue entity in the process, abut it shouldn't matter since are same queue object
+            // saving songs nukes the queue entity in the process, about it shouldn't matter since are same queue object
             if (!queueSongMap.isEmpty()) {
                 queueSongMap.last().job.start()
                 queueSongMap.clear()
@@ -876,8 +874,8 @@ class QueueBoard(
             queueSongMap.add(
                 PriorityJob(
                     0,
-                    coroutineScope.launch(start = CoroutineStart.LAZY) {
-                        player.database.rewriteQueue(mq)
+                    coroutineScope.launch(start = CoroutineStart.DEFAULT) {
+                        player.database.saveQueue(mq)
                     }
                 )
             )
@@ -892,7 +890,7 @@ class QueueBoard(
             queueEntity.add(
                 PriorityJob(
                     0,
-                    coroutineScope.launch(start = CoroutineStart.LAZY) {
+                    coroutineScope.launch(start = CoroutineStart.DEFAULT) {
                         player.database.updateQueue(mq)
                     }
                 )
@@ -908,8 +906,8 @@ class QueueBoard(
             queueEntity.add(
                 // we select most recent task, therefore "lowest" numeric priority at the end of the list == "highest" priority
                 PriorityJob(
-                    1,
-                    coroutineScope.launch(start = CoroutineStart.LAZY) {
+                    -1,
+                    coroutineScope.launch(start = CoroutineStart.DEFAULT) {
                         player.database.updateAllQueues(mq)
                     }
                 )

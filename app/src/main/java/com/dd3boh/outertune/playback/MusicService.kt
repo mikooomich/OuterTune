@@ -450,7 +450,6 @@ class MusicService : MediaLibraryService(),
             runBlocking(Dispatchers.IO) {
                 initQueue()
             }
-            queueBoard.initialized = true
         }
 
         var queueTitle = title
@@ -566,12 +565,10 @@ class MusicService : MediaLibraryService(),
         val maxQueues = dataStore.get(MaxQueuesKey, 19)
         if (dataStore.get(PersistentQueueKey, true)) {
             queueBoard = QueueBoard(this, database.readQueue().toMutableList(), maxQueues)
-            queueBoard.getCurrentQueue()?.let {
-                queueBoard.initialized = true
-            }
         } else {
             queueBoard = QueueBoard(this, maxQueues = maxQueues)
         }
+        queueBoard.initialized = true
     }
 
     fun deInitQueue() {
@@ -586,9 +583,9 @@ class MusicService : MediaLibraryService(),
     fun saveQueueToDisk() {
         val pos = player.currentPosition
         val data = queueBoard.getAllQueues()
-        offloadScope.launch {
+        runBlocking(Dispatchers.IO) {
             data.last().lastSongPos = pos
-            database.rewriteAllQueues(data)
+            database.updateAllQueues(data)
         }
     }
 
@@ -1020,11 +1017,12 @@ class MusicService : MediaLibraryService(),
                 }
 
                 // TODO: support playlist id
-                if (mediaItem.metadata?.isLocal != true && !dataStore.get(PauseRemoteListenHistoryKey, false)) {
-                    val playbackUrl = database.format(mediaItem.mediaId).first()?.playbackTrackingUrl
-                        ?: YTPlayerUtils.playerResponseForMetadata(mediaItem.mediaId, null)
+                val ytHist = mediaItem.metadata?.isLocal != true && !dataStore.get(PauseRemoteListenHistoryKey, false)
+                Log.d(TAG, "Trying to register remote history: $ytHist")
+                if (ytHist) {
+                    val playbackUrl = YTPlayerUtils.playerResponseForMetadata(mediaItem.mediaId, null)
                             .getOrNull()?.playbackTracking?.videostatsPlaybackUrl?.baseUrl
-
+                    Log.d(TAG, "Got playback url: $playbackUrl")
                     playbackUrl?.let {
                         YouTube.registerPlayback(null, playbackUrl)
                             .onFailure {

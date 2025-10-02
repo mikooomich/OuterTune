@@ -1,11 +1,9 @@
 package org.akanework.gramophone.logic.utils
 
-import android.util.Log
-import androidx.annotation.OptIn
 import androidx.annotation.VisibleForTesting
 import androidx.media3.common.Metadata
+import androidx.media3.common.util.Log
 import androidx.media3.common.util.ParsableByteArray
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.extractor.metadata.id3.BinaryFrame
 import androidx.media3.extractor.metadata.id3.TextInformationFrame
 import androidx.media3.extractor.metadata.vorbis.VorbisComment
@@ -43,7 +41,7 @@ object LrcUtils {
             } catch (e: Exception) {
                 if (parserOptions.errorText == null)
                     throw e
-                Log.e(TAG, Log.getStackTraceString(e))
+                Log.e(TAG, Log.getThrowableString(e)!!)
                 Log.e(TAG, "The lyrics are:\n$lyrics")
                 SemanticLyrics.UnsyncedLyrics(listOf(parserOptions.errorText to null))
             }
@@ -51,7 +49,6 @@ object LrcUtils {
         return null
     }
 
-    @OptIn(UnstableApi::class)
     fun extractAndParseLyrics(
         metadata: Metadata,
         parserOptions: LrcParserOptions
@@ -76,7 +73,6 @@ object LrcUtils {
         return null
     }
 
-    @OptIn(UnstableApi::class)
     fun loadAndParseLyricsFile(musicFile: File?, parserOptions: LrcParserOptions): SemanticLyrics? {
         return loadTextFile(
             musicFile?.let { File(it.parentFile, it.nameWithoutExtension + ".ttml") },
@@ -98,13 +94,12 @@ object LrcUtils {
                 lrcFile.readBytes().toString(Charset.defaultCharset())
             else null
         } catch (e: Exception) {
-            Log.e(TAG, Log.getStackTraceString(e))
+            Log.e(TAG, Log.getThrowableString(e)!!)
             return errorText
         }
     }
 
     // begin OuterTune
-    @OptIn(UnstableApi::class)
     fun loadLyricsFile(musicFile: File?): String? {
         return loadTextFile(
             musicFile?.let { File(it.parentFile, it.nameWithoutExtension + ".ttml") },
@@ -122,7 +117,6 @@ object LrcUtils {
 
 // Class heavily based on MIT-licensed https://github.com/yoheimuta/ExoPlayerMusic/blob/77cfb989b59f6906b1170c9b2d565f9b8447db41/app/src/main/java/com/github/yoheimuta/amplayer/playback/UsltFrameDecoder.kt
 // See http://id3.org/id3v2.4.0-frames
-@OptIn(UnstableApi::class)
 private class UsltFrameDecoder {
     companion object {
         private const val ID3_TEXT_ENCODING_ISO_8859_1 = 0
@@ -208,3 +202,13 @@ private class UsltFrameDecoder {
         }
     }
 }
+
+// begin OuterTune
+data class Lyric(
+    val timeStamp: Long? = null,
+    val content: String = "",
+    var isTranslation: Boolean = false
+) : Comparable<Lyric> {
+    override fun compareTo(other: Lyric): Int = ((timeStamp ?: 0L) - (other.timeStamp ?: 0L)).toInt()
+}
+// end OuterTune

@@ -53,7 +53,7 @@
     <string name="wifi_only">Somente no Wi-Fi</string>
     <string name="grp_audio">Áudio</string>
     <string name="keep_alive_title">Evitar encerramento pelo sistema</string>
-    <string name="keep_alive_description">Usar um serviço de primeiro plano persistente para evitar que o OuterTune seja encerrado em segundo plano.</string>
+    <string name="keep_alive_description">Usar um serviço de primeiro plano persistente para evitar que o OuterTune seja encerrado em segundo plano</string>
     <string name="persistent_queue_desc_ot">Restaurar fila(s) aberta(s) previamente ao iniciar o app</string>
     <string name="min_playback_duration">Duração mínima de reprodução</string>
     <string name="grp_proxy">Proxy</string>
@@ -157,8 +157,8 @@
     <string name="sync_conflict_title">Resolução de conflitos</string>
     <string name="sync_mode_rw">Leitura e gravação (também permitir fazer mudanças no conteúdo remoto)</string>
     <string name="grp_sync">Sincronização</string>
-    <string name="checking_for_update">Buscando atualizações</string>
-    <string name="check_for_update">Buscar atualizações</string>
+    <string name="checking_for_update">Conferindo se há atualizações</string>
+    <string name="check_for_update">Conferir se há atualizações</string>
     <string name="no_updates_available">Nenhuma atualização disponível</string>
     <string name="playlist_missing_note">Suas listas sumiram? Clique aqui para ativar a sincronização no modo de ler/gravar nas configurações</string>
     <string name="library_empty">Os conteúdos da sua biblioteca aparecerão aqui</string>
@@ -255,4 +255,9 @@
     <string name="audio_decoder_preference">Decodificador de áudio</string>
     <string name="audio_decoder_system_only">Apenas decodificadores do sistema</string>
     <string name="audio_decoder_system_with_ffmpeg">Priorizar decodificadores do sistema</string>
+    <string name="max_queues_title">Número máximo de filas</string>
+    <string name="oobe_welcome_tip">Para uma melhor experiência, recomendamos concluir uma configuração rápida para personalizar configurações principais, como o tema, conta do YouTube, mídia local, e downloads.</string>
+    <string name="oobe_cache_title">Cache de músicas</string>
+    <string name="oobe_cache_subtitle">Selecione um tamanho para a cache de músicas. Isso pode ajudar a reduzir problemas com a internet ou reprodução com a API do YouTube</string>
+    <string name="action_logout_tooltip">Para desconectar-se totalmente, desconecte-se da sua conta do YouTube pelo portal web antes de usar este botão</string>
 </resources>
