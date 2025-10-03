@@ -264,6 +264,8 @@ import com.dd3boh.outertune.utils.scanners.LocalMediaScanner.Companion.destroySc
 import com.dd3boh.outertune.utils.scanners.LocalMediaScanner.Companion.scannerState
 import com.dd3boh.outertune.utils.scanners.ScannerAbortException
 import com.dd3boh.outertune.utils.urlEncode
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.valentinilk.shimmer.LocalShimmerTheme
 import com.zionhuang.innertube.YouTube
 import com.zionhuang.innertube.models.SongItem
@@ -531,6 +533,7 @@ class MainActivity : ComponentActivity() {
                 pureBlack = pureBlack,
                 themeColor = themeColor
             ) {
+                val backdrop = rememberLayerBackdrop()
                 BoxWithConstraints(
                     modifier = Modifier
                         .fillMaxSize()
@@ -936,7 +939,7 @@ class MainActivity : ComponentActivity() {
                                         else
                                             slideOutHorizontally { it / 2 } + fadeOut(tween(250))
                                     },
-                                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+                                    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)     .layerBackdrop(backdrop)
                                 ) {
                                     composable(Screens.Home.route) {
                                         HomeScreen(navController)
@@ -1525,6 +1528,7 @@ class MainActivity : ComponentActivity() {
                                 navRail()
                                 if (oobeStatus >= OOBE_VERSION) {
                                     BottomSheetPlayer(
+                                        backdrop = backdrop,
                                         state = playerBottomSheetState,
                                         navController = navController
                                     )

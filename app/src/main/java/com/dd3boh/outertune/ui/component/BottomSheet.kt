@@ -53,9 +53,11 @@ import androidx.compose.ui.unit.dp
 import com.dd3boh.outertune.constants.BottomSheetAnimationSpec
 import com.dd3boh.outertune.constants.BottomSheetSoftAnimationSpec
 import com.dd3boh.outertune.constants.NavigationBarAnimationSpec
+import com.kyant.backdrop.backdrops.LayerBackdrop
+import com.kyant.backdrop.drawBackdrop
+import com.kyant.backdrop.effects.refraction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.pow
 
 /**
  * Bottom Sheet
@@ -66,20 +68,23 @@ fun BottomSheet(
     state: BottomSheetState,
     modifier: Modifier = Modifier,
     background: @Composable (BoxScope.() -> Unit) = { },
+    backdrop: LayerBackdrop,
+    sheetBackdrop: LayerBackdrop? = null,
     onDismiss: (() -> Unit)? = null,
     collapsedContent: @Composable BoxScope.() -> Unit,
     collapsedBackgroundColor: Color = Color.Transparent,
     content: @Composable BoxScope.() -> Unit,
 ) {
-    Box(
-        modifier = modifier
-            .graphicsLayer {
-                // background fades during about 10%-61% progress
-                alpha = (1.4f * (state.progress.coerceAtLeast(0.1f) - 0.1f).pow(0.5f)).coerceIn(0f, 1f)
-            }
-            .fillMaxSize(),
-        content = background
-    )
+//    Box(
+//        modifier = modifier
+//
+//            .graphicsLayer {
+//                // background fades during about 10%-61% progress
+//                alpha = (1.4f * (state.progress.coerceAtLeast(0.1f) - 0.1f).pow(0.5f)).coerceIn(0f, 1f)
+//            }
+//            .fillMaxSize(),
+//        content = background
+//    )
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -122,6 +127,19 @@ fun BottomSheet(
         if (!state.isCollapsed) {
             BoxWithConstraints(
                 modifier = Modifier
+                    .drawBackdrop(
+                        backdrop = backdrop,
+                        exportedBackdrop = sheetBackdrop,
+                        shape = { RoundedCornerShape(32f.dp) },
+                        effects = {
+                            // lens effect
+                            refraction(
+                                height = 48f.dp.toPx(),
+                                amount = 96f.dp.toPx(),
+                                hasDepthEffect = true
+                            )
+                        }
+                    )
                     .fillMaxSize()
                     .graphicsLayer {
                         alpha = ((state.progress * 4 - 0.25f) * 4).coerceIn(0f, 1f)
@@ -133,6 +151,18 @@ fun BottomSheet(
         if (!state.isExpanded && (onDismiss == null || !state.isDismissed)) {
             Box(
                 modifier = Modifier
+                    .drawBackdrop(
+                        backdrop = backdrop,
+                        shape = { RoundedCornerShape(32f.dp) },
+                        effects = {
+                            // lens effect
+                            refraction(
+                                height = 24f.dp.toPx(),
+                                amount = 48f.dp.toPx(),
+                                hasDepthEffect = true
+                            )
+                        }
+                    )
                     .graphicsLayer {
                         alpha = 1f - (state.progress * 4).coerceAtMost(1f)
                     }
