@@ -30,7 +30,7 @@ android {
         minSdk = 24
         targetSdk = 36
         versionCode = 70
-        versionName = "0.10.0"
+        versionName = "0.10.0-glass"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -260,7 +260,7 @@ dependencies {
 
     // misc
     implementation(libs.aboutlibraries.compose.m3)
-    implementation("com.github.Kyant0:AndroidLiquidGlass:1.0.0-alpha15")
+    implementation("com.github.Kyant0:AndroidLiquidGlass:1.0.0-alpha16")
 
     // sdk24 support
     // Support for N is officially unsupported even it the app should still work. Leave this outside of the version catalog.
