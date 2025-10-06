@@ -32,7 +32,7 @@ object LocalLyricsProvider : LyricsProvider {
         path: String,
         parserOptions: LrcUtils.LrcParserOptions
     ): SemanticLyrics? {
-        return loadAndParseLyricsFile(File(path), parserOptions)
+        return loadAndParseLyricsFile(File(path), null,parserOptions)
     }
 
 }
