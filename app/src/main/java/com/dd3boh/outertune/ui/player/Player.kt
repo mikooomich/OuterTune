@@ -144,6 +144,9 @@ import com.dd3boh.outertune.utils.coilCoroutine
 import com.dd3boh.outertune.utils.makeTimeString
 import com.dd3boh.outertune.utils.rememberEnumPreference
 import com.dd3boh.outertune.utils.rememberPreference
+import com.kyant.backdrop.backdrops.LayerBackdrop
+import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
@@ -153,6 +156,7 @@ import kotlin.math.max
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun BottomSheetPlayer(
+    backdrop: LayerBackdrop,
     state: BottomSheetState,
     navController: NavController,
     modifier: Modifier = Modifier,
@@ -305,7 +309,7 @@ fun BottomSheetPlayer(
         collapsedBound = dismissedBound + 2.dp,
         initialAnchor = 1
     )
-
+    val queueBackdrop = rememberLayerBackdrop()
 
     BottomSheet(
         state = state,
@@ -376,6 +380,7 @@ fun BottomSheetPlayer(
             playerConnection.player.clearMediaItems()
             playerConnection.service.deInitQueue()
         },
+        backdrop = backdrop,
         collapsedContent = {
             MiniPlayer(
                 position = position,
@@ -719,6 +724,7 @@ fun BottomSheetPlayer(
             val verticalInsets = WindowInsets(left = 0.dp, top = vPaddingDp, right = 0.dp, bottom = vPaddingDp)
             Row(
                 modifier = Modifier
+                    .layerBackdrop(queueBackdrop)
                     .windowInsetsPadding(
                         WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal).add(verticalInsets)
                     )
@@ -776,6 +782,7 @@ fun BottomSheetPlayer(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
+                    .layerBackdrop(queueBackdrop)
                     .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal))
                     .padding(bottom = queueSheetState.collapsedBound)
             ) {
@@ -827,6 +834,8 @@ fun BottomSheetPlayer(
                 playerConnection.service.queueBoard.detachedHead = false
             },
             onBackgroundColor = onBackgroundColor,
+            backdrop = queueBackdrop,
+            sheetBackdrop = backdrop,
             navController = navController
         )
     }

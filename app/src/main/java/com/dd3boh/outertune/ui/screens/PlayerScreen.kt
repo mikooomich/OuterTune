@@ -20,6 +20,7 @@ import com.dd3boh.outertune.ui.component.BottomSheetState
 import com.dd3boh.outertune.ui.player.BottomSheetPlayer
 import com.dd3boh.outertune.ui.player.QueueScreen
 import com.dd3boh.outertune.utils.rememberEnumPreference
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,12 +56,14 @@ fun PlayerScreen(
     ) {
         QueueScreen(
             playerBottomSheetState = playerBottomSheetState,
+            backdrop = rememberLayerBackdrop(),
             onTerminate = {
                 playerConnection?.service?.queueBoard?.detachedHead = false
             },
             navController = navController
         )
         BottomSheetPlayer(
+            backdrop = rememberLayerBackdrop(),
             state = playerBottomSheetState,
             navController = navController
         )

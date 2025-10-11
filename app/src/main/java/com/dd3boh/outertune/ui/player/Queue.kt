@@ -145,6 +145,9 @@ import com.dd3boh.outertune.ui.menu.QueueMenu
 import com.dd3boh.outertune.utils.makeTimeString
 import com.dd3boh.outertune.utils.rememberEnumPreference
 import com.dd3boh.outertune.utils.rememberPreference
+import com.kyant.backdrop.backdrops.LayerBackdrop
+import com.kyant.backdrop.drawBackdrop
+import com.kyant.backdrop.effects.refraction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
@@ -159,6 +162,8 @@ fun QueueSheet(
     onTerminate: () -> Unit,
     playerBottomSheetState: BottomSheetState,
     onBackgroundColor: Color,
+    backdrop: LayerBackdrop,
+    sheetBackdrop: LayerBackdrop? = null,
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
@@ -172,6 +177,8 @@ fun QueueSheet(
                     .fillMaxSize()
             )
         },
+        backdrop = backdrop,
+        sheetBackdrop = sheetBackdrop,
         modifier = modifier,
         collapsedContent = {
             Row(
@@ -200,6 +207,8 @@ fun QueueSheet(
         QueueContent(
             queueState = state,
             onTerminate = onTerminate,
+            backdrop = backdrop,
+            sheetBackdrop = sheetBackdrop,
             playerState = playerBottomSheetState,
             navController = navController
         )
@@ -210,6 +219,8 @@ fun QueueSheet(
 fun QueueScreen(
     onTerminate: () -> Unit,
     playerBottomSheetState: BottomSheetState,
+    backdrop: LayerBackdrop,
+    sheetBackdrop: LayerBackdrop? = null,
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
@@ -224,6 +235,8 @@ fun QueueScreen(
         QueueContent(
             onTerminate = onTerminate,
             playerState = playerBottomSheetState,
+            backdrop = backdrop,
+            sheetBackdrop = sheetBackdrop,
             navController = navController
         )
     }
@@ -234,6 +247,8 @@ fun QueueScreen(
 fun BoxScope.QueueContent(
     queueState: BottomSheetState? = null,
     playerState: BottomSheetState,
+    backdrop: LayerBackdrop,
+    sheetBackdrop: LayerBackdrop? = null,
     onTerminate: () -> Unit,
     navController: NavController,
 ) {
@@ -847,7 +862,19 @@ fun BoxScope.QueueContent(
 
         Column(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .drawBackdrop(
+                    backdrop = backdrop,
+                    exportedBackdrop = sheetBackdrop,
+                    shape = { RoundedCornerShape(32f.dp) },
+                    effects = {
+                        // lens effect
+                        refraction(
+                            height = 48f.dp.toPx(),
+                            amount = 96f.dp.toPx(),
+                            hasDepthEffect = true
+                        )
+                    }
+                )
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom + WindowInsetsSides.End))
                 .clickable {
