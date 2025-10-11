@@ -256,7 +256,8 @@ dependencies {
     implementation(project(":kugou"))
     implementation(project(":lrclib"))
     implementation(project(":material-color-utilities"))
-    implementation(project(":taglib"))
+//    implementation(project(":taglib"))
+    implementation(files("taglib-release.aar"))
 
     // misc
     implementation(libs.aboutlibraries.compose.m3)
@@ -266,8 +267,3 @@ dependencies {
     implementation("androidx.webkit:webkit:1.14.0")
 }
 
-afterEvaluate {
-    dependencies {
-        add("fullImplementation", project(":ffMetadataEx"))
-    }
-}
