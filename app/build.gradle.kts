@@ -256,8 +256,7 @@ dependencies {
     implementation(project(":kugou"))
     implementation(project(":lrclib"))
     implementation(project(":material-color-utilities"))
-//    implementation(project(":taglib"))
-    implementation(files("taglib-release.aar"))
+
 
     // misc
     implementation(libs.aboutlibraries.compose.m3)
